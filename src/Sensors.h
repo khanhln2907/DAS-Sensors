@@ -1,7 +1,7 @@
 /*
  Name:		Sensors.h
  Created:	4/23/2021 2:46:51 PM
- Author:	khanh
+ Author:	Khanh Le
  Editor:	http://www.visualmicro.com
 */
 
@@ -13,6 +13,9 @@
 #else
 	#include "WProgram.h"
 #endif
+
+#include "TaskSampleGPS.h"
+
 
 
 #endif
