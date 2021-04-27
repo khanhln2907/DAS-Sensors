@@ -19,11 +19,15 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Main", "Main\Main.vcxproj",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Main_", "Main_", "{99919065-27A1-4086-93C4-D0E30B9EF8D9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CircularBuffer", "..\ringbuffer.git\CircularBuffer.vcxitems", "{D7926995-27A7-4A0F-A4E2-1402F7684502}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Sensors.vcxitems*{1d1ab603-3af8-4021-a49e-74ad7d463f08}*SharedItemsImports = 4
+		..\ringbuffer.git\CircularBuffer.vcxitems*{1d1ab603-3af8-4021-a49e-74ad7d463f08}*SharedItemsImports = 4
 		Sensors.vcxitems*{27b09e83-f751-4f09-bd63-cf6fe84b3575}*SharedItemsImports = 9
 		Sensors.vcxitems*{c42f0910-1b7e-40d8-90a8-045574834e80}*SharedItemsImports = 4
+		..\ringbuffer.git\CircularBuffer.vcxitems*{d7926995-27a7-4a0f-a4e2-1402f7684502}*SharedItemsImports = 9
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -50,6 +54,7 @@ Global
 		{C5F80730-F44F-4478-BDAE-6634EFC2CA88} = {7FDBBF39-2B78-45C9-B687-41808D01DBCD}
 		{C42F0910-1B7E-40D8-90A8-045574834E80} = {7FDBBF39-2B78-45C9-B687-41808D01DBCD}
 		{1D1AB603-3AF8-4021-A49E-74AD7D463F08} = {99919065-27A1-4086-93C4-D0E30B9EF8D9}
+		{D7926995-27A7-4A0F-A4E2-1402F7684502} = {1201EF4E-68AF-48AE-82D2-7700BF37F8F8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2CAC7DBC-8186-463E-B980-EB5A179D22D7}

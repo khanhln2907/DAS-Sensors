@@ -52,7 +52,7 @@ public:
 	 * @param [in] data The data passed in to the newly started TaskBase.
 	 */
 	virtual void run(void* data) = 0; // Make run pure virtual
-	static void taskDelayMllis(int ms);
+	static void taskSleepMllis(int ms);
 
 private:
 	xTaskHandle _handle;

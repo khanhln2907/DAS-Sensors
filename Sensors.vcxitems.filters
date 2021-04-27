@@ -17,7 +17,13 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)src\TaskBase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\khanh\Desktop\Hobbies Workspace\DAS-Sensors.git\src\TaskSampleGPS.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\TaskSampleUARTBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\TaskSampleGPS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\CommonFunc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,7 +38,16 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)src\TaskBase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\khanh\Desktop\Hobbies Workspace\DAS-Sensors.git\src\TaskSampleGPS.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\TaskSampleUARTBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\TaskSampleGPS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\CommonFunc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\CommonTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

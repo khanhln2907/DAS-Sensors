@@ -20,12 +20,17 @@
   </ItemGroup>
   <ItemGroup>
     <!-- <ClInclude Include="$(MSBuildThisFileDirectory)Sensors.h" /> -->
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\CommonFunc.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\CommonTypes.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)src\TaskBase.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)src\TaskSampleGPS.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)src\TaskSampleUARTBase.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\CommonFunc.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\Sensors.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\TaskBase.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)src\TaskSampleGPS.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)src\TaskSampleUARTBase.cpp" />
   </ItemGroup>
 </Project>

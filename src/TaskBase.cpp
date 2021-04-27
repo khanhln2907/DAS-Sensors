@@ -69,7 +69,7 @@ void TaskBase::start(std::string TaskBaseName, uint16_t stackSize, void* TaskBas
  * @return N/A.
  */
 
-/* static */ void TaskBase::taskDelayMllis(int ms) {
+/* static */ void TaskBase::taskSleepMllis(int ms) {
     ::vTaskDelay(ms / portTICK_PERIOD_MS);
 } // delay
 
