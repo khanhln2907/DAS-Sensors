@@ -12,4 +12,4 @@
 *.bin
 *.elf
 */*/Debug
-WS_terminal
+WS_terminal.code-workspace
