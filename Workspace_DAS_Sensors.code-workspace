@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "..\\DAS-Library"
+		},
+		{
+			"name": "DAS-Sensors",
+			"path": "."
+		}
+	],
+	"settings": {}
+}

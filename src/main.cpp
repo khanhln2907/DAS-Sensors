@@ -1,8 +1,13 @@
 /*
  Name:		Main.ino
  Created:	4/23/2021 4:31:12 PM
- Author:	khanh
+ Author:	Khanh Le
 */
+
+#include "FreeRTOS.h"
+#include "ArduinoLog.h"
+#include <SPI.h>
+#include "TaskSampleGPS.h"
 
 #if CONFIG_FREERTOS_UNICORE
 static const BaseType_t app_cpu = 0;
@@ -10,16 +15,9 @@ static const BaseType_t app_cpu = 0;
     static const BaseType_t app_cpu = 1;
 #endif
 
-#include "FreeRTOS.h"
-#include "Sensors.h"
-#include <ArduinoLog.h>
-#include <esp_heap_caps.h>
-
 #define DEBUG_PORT Serial
 #define DEBUG_BAUD 115200
 #define DEBUG_LEVEL LOG_LEVEL_NOTICE
-
-
 
 #define GPS_PORT Serial2
 #define GPS_BAUD 9600

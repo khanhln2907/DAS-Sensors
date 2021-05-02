@@ -7,9 +7,9 @@
 #include<vector>
 using namespace std;
 
-#include "CommonFunc.h" // Function for conversion ASCII to uint8_t
+#include "CommonFunction.h" // Function for conversion ASCII to uint8_t
 
-static const char* LOG_TAG = "TaskSampleGPS ";
+//static const char* LOG_TAG = "TaskSampleGPS ";
 
 
 #define UTCTIME_MACRO _timeUTC.hour, _timeUTC.minute, _timeUTC.second
@@ -110,7 +110,8 @@ bool TaskSampleGPS::parse()
 
 		isValid = ((calCS & 0xF0) >> 4) == rxCS[0] && (calCS & 0x0F) == rxCS[1];
 		if (isValid) {
-			Log.verbose("\n %d: %d bytes GPS Parsed\n", (unsigned long)millis(), nBytesGet);
+			//Log.notice("\n %d: %d bytes GPS Parsed\n", (unsigned long)millis(), nBytesGet);
+			Log.notice("%s \n", msgPtr.c_str());
 			parseNMEA_GPS_Message(msgPtr);
 		}
 		else {
@@ -150,7 +151,7 @@ void TaskSampleGPS::parseNMEA_GPS_Message(std::string msg)
 	// Push the last token for the last value
 	tokens.push_back(msg.substr(lastPos, pos - lastPos));
 
-	//#define DEBUG_TOKENIZE
+//#define DEBUG_TOKENIZE
 #ifdef DEBUG_TOKENIZE
 	Log.notice("Parsed begin: \n");
 	for (int i = 0; i < tokens.size(); i++) {
@@ -178,41 +179,43 @@ void TaskSampleGPS::parseNMEA_GPS_Message(std::string msg)
 
 		// Check if the data is valid ?
 		// Get time
-		_timeUTC.hour = atoi(timeStr.substr(0, 2).c_str());
-		_timeUTC.minute = atoi(timeStr.substr(2, 2).c_str());
-		_timeUTC.second = atof(timeStr.substr(4, 2).c_str());
-		Log.notice("GPGLL --> %d:%d:%F: ", _timeUTC.hour, _timeUTC.minute, _timeUTC.second);
+		if (!timeStr.empty()) {
+			_timeUTC.hour = atoi(timeStr.substr(0, 2).c_str());
+			_timeUTC.minute = atoi(timeStr.substr(2, 2).c_str());
+			_timeUTC.second = atof(timeStr.substr(4, 2).c_str());
+			Log.notice("GPGLL --> %d:%d:%F: ", _timeUTC.hour, _timeUTC.minute, _timeUTC.second);
+		}
 		if (statusStr == GPS_t::NMEAINFO::Status_DataValid) {		
 			if (posModeChar != GPS_t::NMEAINFO::PosMode_No_Fix) {
 				_wgs84Sample.TimeStamp = (unsigned long)millis();
 				_wgs84Sample.Value.lat = (float)atoi(latStr.substr(0, 2).c_str()) + atoi(latStr.substr(2).c_str()) / 60;
-				_wgs84Sample.Value.lon = (float)atoi(lonStr.substr(0, 2).c_str()) + atoi(lonStr.substr(2).c_str()) / 60;
+				_wgs84Sample.Value.lon = (float)atoi(lonStr.substr(0, 3).c_str()) + atoi(lonStr.substr(2).c_str()) / 60;
 				Log.notice(F("Lat: %F Lon: %F, "), _wgs84Sample.Value.lat, _wgs84Sample.Value.lon);
 			}
 
 			switch (posModeChar) {
 			case GPS_t::NMEAINFO::PosMode_No_Fix:
 			{
-				Log.notice(F("Nofix"));
+				Log.notice(F("Nofix \n"));
 				break;
 			}
 			case GPS_t::NMEAINFO::PosMode_Estimated_Dead_Reckoning_Fix:
 			{
-				Log.notice(F("EDRFix "));
+				Log.notice(F("EDRFix \n"));
 				break;
 			}
 			case GPS_t::NMEAINFO::PosMode_Autonomous_GNSS_Fix:
 			{
-				Log.notice(F("Auto GNSS Fix"));
+				Log.notice(F("Auto GNSS Fix \n"));
 				break;
 			}
 			case GPS_t::NMEAINFO::PosMode_Differential_GNSS_Fix:
 			{
-				Log.notice(F("DiffFix"));
+				Log.notice(F("DiffFix \n"));
 				break;
 			}
 			default: {
-				Log.notice(F("Data Wrong"));
+				Log.notice(F("Parsed not define or wrong \n"));
 				break;
 			}
 			}
@@ -234,16 +237,19 @@ void TaskSampleGPS::parseNMEA_GPS_Message(std::string msg)
 		//std::string posMode = tokens.at(12).c_str();
 		char posModeChar = *tokens.at(12).c_str();
 
-		_timeUTC.hour = atoi(timeStr.substr(0, 2).c_str());
-		_timeUTC.minute = atoi(timeStr.substr(2, 2).c_str());
-		_timeUTC.second = atof(timeStr.substr(4, 2).c_str());
-		Log.notice("GPRMC --> %d:%d:%F: ", _timeUTC.hour, _timeUTC.minute, _timeUTC.second);
+		if (!timeStr.empty()) {
+			_timeUTC.hour = atoi(timeStr.substr(0, 2).c_str());
+			_timeUTC.minute = atoi(timeStr.substr(2, 2).c_str());
+			_timeUTC.second = atof(timeStr.substr(4, 2).c_str());
+			Log.notice("GPRMC --> %d:%d:%F: ", _timeUTC.hour, _timeUTC.minute, _timeUTC.second);
+		}
+		
 		if (status == GPS_t::NMEAINFO::Status_DataValid) {	
 			// Parsed the message if we have Fix
 			if (posModeChar != GPS_t::NMEAINFO::PosMode_No_Fix) {
 				_wgs84Sample.TimeStamp = (unsigned long)millis();
 				_wgs84Sample.Value.lat = (float)atoi(latStr.substr(0, 2).c_str()) + atoi(latStr.substr(2).c_str()) / 60;
-				_wgs84Sample.Value.lon = (float)atoi(lonStr.substr(0, 2).c_str()) + atoi(lonStr.substr(2).c_str()) / 60;
+				_wgs84Sample.Value.lon = (float)atoi(lonStr.substr(0, 3).c_str()) + atoi(lonStr.substr(2).c_str()) / 60;
 				Log.notice(F("Lat: %F Lon: %F "), _wgs84Sample.Value.lat, _wgs84Sample.Value.lon);
 			}
 
@@ -251,22 +257,22 @@ void TaskSampleGPS::parseNMEA_GPS_Message(std::string msg)
 			switch (posModeChar) {
 				case GPS_t::NMEAINFO::PosMode_No_Fix:
 				{
-					Log.notice(F("Nofix "));
+					Log.notice(F("Nofix \n"));
 					break;
 				}
 				case GPS_t::NMEAINFO::PosMode_Estimated_Dead_Reckoning_Fix:
 				{
-					Log.notice(F("EDRFix. Lat: %s "));
+					Log.notice(F("EDRFix \n"));
 					break;
 				}
 				case GPS_t::NMEAINFO::PosMode_Autonomous_GNSS_Fix:
 				{
-					Log.notice(F("Auto GNSS Fix "));
+					Log.notice(F("Auto GNSS Fix \n"));
 					break;
 				}
 				case GPS_t::NMEAINFO::PosMode_Differential_GNSS_Fix:
 				{
-					Log.notice(F("DiffFix "));
+					Log.notice(F("DiffFix \n"));
 					break;
 				}
 				default: {

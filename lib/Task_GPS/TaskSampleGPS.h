@@ -8,7 +8,7 @@
 
 #pragma once
 #include "TaskSampleUARTBase.h"
-#include "CommonTypes.h"
+#include "CommonType.h"
 
 namespace GPS_t {
     enum class Status_t : char {
