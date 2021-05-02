@@ -12,3 +12,4 @@
 *.bin
 *.elf
 */*/Debug
+WS_terminal
