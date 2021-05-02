@@ -1,7 +1,8 @@
 {
 	"folders": [
 		{
-			"path": "..\\DAS-Library"
+			"name": "DAS-Common.git",
+			"path": "..\\DAS-Common.git"
 		},
 		{
 			"name": "DAS-Sensors",
