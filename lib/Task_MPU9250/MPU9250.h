@@ -156,8 +156,8 @@ enum MPU_INTERFACE {
 };
 
 enum MPU_STATUS {
-	FAIL = 0, 
-	OK
+	MPU_FAIL = 0, 
+	MPU_OK
 };
 
 class MPU9250 {

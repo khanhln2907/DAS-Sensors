@@ -8,7 +8,8 @@
 #include "ArduinoLog.h"
 #include <SPI.h>
 #include "TaskSampleGPS.h"
-#include "MPU9250.h"
+#include "TaskSampleMPU9250.h"
+//#include "MPU9250.h"
 #include "PortConfig.h"
 #if CONFIG_FREERTOS_UNICORE
 static const BaseType_t app_cpu = 0;
@@ -19,7 +20,7 @@ static const BaseType_t app_cpu = 0;
 TaskSampleGPS GPS_h(80);
 static TaskHandle_t taskSampleGPS_h;
 
-MPU9250 imu;
+TaskSampleMPU9250 IMU_t_h;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
@@ -32,8 +33,7 @@ void setup() {
     // GPS_h.start("TaskSampleGPS", 20000, NULL, 1, &taskSampleGPS_h, app_cpu);
 
     //imu.setup(&Wire, MPU_I2C_ADDR);
-    imu.setup(&SPI, 2);
-    imu.begin();
+    IMU_t_h.begin(&SPI, 2);
     
 }
 

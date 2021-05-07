@@ -17,7 +17,7 @@ public:
 
 protected:
     virtual uint16_t getSampleRate() = 0;
-    virtual void loop() = 0;
+    virtual void loop(void* data) = 0;
 
     Sample<MPU_Type> _sample;
 private:

@@ -7,17 +7,22 @@
 
 #pragma once
 #include "TaskSampleMPUBase.h"
+#include "SPI.h"
+#include "MPU9250.h"
 
 class TaskSampleMPU9250 : public TaskSampleMPUBase {
 public:
     TaskSampleMPU9250();
+    void begin(SPIClass* SPIx, uint8_t cs);
+
+
 
 protected:
 
     virtual uint16_t getSampleRate();
-    virtual void loop();
+    virtual void loop(void* data);
     
 private:
-
+    MPU9250 _imuHandle;
 
 };

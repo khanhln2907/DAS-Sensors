@@ -8,7 +8,6 @@
 #pragma once
 #include "TaskBase.h"
 #include "HardwareSerial.h"
-#include "CircularBuffer.h"
 
 class TaskSampleSynchBase : public TaskBase {
 public:
@@ -18,7 +17,7 @@ protected:
 
     virtual uint16_t getSampleRate() = 0;
     
-    virtual void loop() = 0;
+    virtual void loop(void* data) = 0;
     
 private:
     

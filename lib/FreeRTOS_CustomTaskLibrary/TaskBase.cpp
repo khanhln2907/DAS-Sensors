@@ -37,7 +37,11 @@ TaskBase::~TaskBase() {
 void TaskBase::runTaskBase(void* pTaskBaseInstance) {
     TaskBase* pTaskBase = (TaskBase*)pTaskBaseInstance;
     ESP_LOGD(LOG_TAG, ">> runTaskBase: TaskBaseName=%s", pTaskBase->_TaskBaseName.c_str());
-    pTaskBase->run(pTaskBase->_TaskBaseData);
+    while(1){
+        pTaskBase->loop(pTaskBase->_TaskBaseData);  // subclass execute  defines the operation excuted in this loop
+        // Rest until next wake up
+        pTaskBase->taskSleepInterval();
+    }
     ESP_LOGD(LOG_TAG, "<< runTaskBase: TaskBaseName=%s", pTaskBase->_TaskBaseName.c_str());
     pTaskBase->stop();
 } // runTaskBase
@@ -85,3 +89,8 @@ void TaskBase::stop() {
     _handle = nullptr;
     ::vTaskDelete(temp);
 } // stop
+
+void TaskBase::taskSleepInterval()
+{
+	taskSleepMllis((1e3 / this->getSampleRate()) / portTICK_PERIOD_MS);
+}

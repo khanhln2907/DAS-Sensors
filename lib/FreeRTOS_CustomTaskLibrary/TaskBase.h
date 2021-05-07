@@ -51,8 +51,11 @@ public:
 	 *
 	 * @param [in] data The data passed in to the newly started TaskBase.
 	 */
-	virtual void run(void* data) = 0; // Make run pure virtual
 	static void taskSleepMllis(int ms);
+
+protected:
+	virtual uint16_t getSampleRate() = 0;
+	virtual void loop(void* data) = 0; // Make run pure virtual
 
 private:
 	xTaskHandle _handle;
@@ -62,6 +65,8 @@ private:
 	uint16_t    _stackSize;
 	uint8_t     _priority;
 	BaseType_t  _coreId;
+
+	void taskSleepInterval();
 
 };
 

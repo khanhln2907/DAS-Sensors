@@ -1,2 +1,6 @@
 #pragma once
-#include "TaskSampleMPU9250.h"
+#include "TaskSampleMPUBase.h"
+
+TaskSampleMPUBase::TaskSampleMPUBase(){
+        ;
+};

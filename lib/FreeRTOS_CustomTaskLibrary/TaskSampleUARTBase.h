@@ -26,10 +26,7 @@ public:
 protected:
     HardwareSerial* _port;
     
-    void run(void* data);
-
-    void taskSleepInterval();
-    virtual uint16_t getSampleRate() = 0;
+    void loop(void* data);
     
     virtual const uint8_t* const getHeaderBytes(uint8_t* nHeader) = 0;
 

@@ -15,6 +15,8 @@ void MPU9250::setup(SPIClass* spix, uint8_t cs){
 	_interface = USE_SPI;
 	_spiPort = spix;
 	_CSPort = cs;
+	pinMode(_CSPort, OUTPUT);
+	_spiPort->begin();
 }
 
 
@@ -22,18 +24,13 @@ void MPU9250::setup(TwoWire* bus, uint8_t i2cAddr){
 	_interface = USE_I2C;
 	_i2cPort = bus;
 	_address = i2cAddr;
+	_i2cPort->begin();
 }
 
 MPU_STATUS MPU9250::begin()
 {
-	// SPI config
-	_spiFreq = SPI_LS;
-	pinMode(_CSPort, OUTPUT);
-	DIS_CS;
-	_spiPort->begin();
-
 	// Debugging
-	bool isDoubleCheckSPI = true;
+	bool isDoubleCheckSPI = false;
 
 	// Reset power of MPU to stabilize the SPI protocols
 	writeRegister(MPUREG_PWR_MGMT_1, PWR_MGMT_RST);
@@ -48,7 +45,7 @@ MPU_STATUS MPU9250::begin()
 	{
 		Log.notice("MPU9250 is unavailble! Device Return: %X\n", checkIDMPU);
 		Log.notice("Init failed \n");
-		return -1;
+		return MPU_STATUS::MPU_FAIL;
 	}
 
 	// Select source clock
@@ -154,6 +151,7 @@ int MPU9250::readRegister(const uint8_t regAddr, const uint8_t nBytes, uint8_t* 
 		else {
 			return -1;
 		}
+		_i2cPort->endTransmission();
 	}
 }
 
