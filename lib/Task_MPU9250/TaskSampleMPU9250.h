@@ -18,7 +18,6 @@ protected:
     virtual void loop();
     
 private:
-    Sample<>
 
 
 };

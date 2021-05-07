@@ -1,7 +1,9 @@
 #pragma once
 #include <Arduino.h>
 #include <SPI.h>
-#include "CommonType.h"
+#include <Wire.h>
+#include <CommonType.h>
+
 
 typedef enum {
 	AFS_SEL_2g,
@@ -9,6 +11,7 @@ typedef enum {
 	AFS_SEL_8g,
 	AFS_SEL_16g
 }Mpu9250_ImuScale_t; // [LSB/g]
+
 
 typedef enum {
 	FS_SEL_250dps,
@@ -24,13 +27,12 @@ typedef enum {
 #define MPUREG_CONFIG			0x1A
 #define MPUREG_GYRO_CONFIG		0x1B
 #define MPUREG_ACC_CONFIG		0x1C
-#define MPUREG_ACC_CONFIG_2 	0x1D
+#define MPUREG_ACC_CONFIG_2 		0x1D
 #define MPUREG_USER_CTRL		0x6A
 #define MPUREG_PWR_MGMT_1		0x6B
 #define MPUREG_PWR_MGMT_2		0x6C
 #define MPUREG_WHO_AM_I			0x75
 #define MPUREG_I2C_MST_CTRL		0x24
-
 
 // Default Value
 #define MPU_ID					0x71
@@ -148,16 +150,28 @@ enum SPI_CLK_t {
 	SPI_HS = 20000000
 };
 
+enum MPU_INTERFACE {
+	USE_SPI = 0,
+	USE_I2C = 1
+};
+
+enum MPU_STATUS {
+	FAIL = 0, 
+	OK
+};
+
 class MPU9250 {
 public:
-	MPU9250(SPIClass* spix, uint8_t cs);
+	MPU9250();
 
-	int init();
+	void setup(SPIClass* spix, uint8_t cs);
+	void setup(TwoWire* bus, uint8_t i2cAddr);
+	MPU_STATUS begin();
 
 	~MPU9250();
 
 	void writeRegister(const uint8_t regAddr, uint8_t value, bool checkFlag = false);
-	void readRegister(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf);
+	int readRegister(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf);
 
 	void writeAK8963Reg(const uint8_t subReg, uint8_t value, bool checkFlag = false);
 	void readAK8963Reg(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf, bool checkFlag = false);
@@ -167,10 +181,13 @@ public:
 	void sample();
 	void printData();
 private:
-	
+	MPU_INTERFACE _interface;
 	SPIClass* _spiPort;
 	SPISettings _spiLS = SPISettings(1000000, MSBFIRST, SPI_MODE3);
 	SPISettings _spiHS = SPISettings(20000000, MSBFIRST, SPI_MODE3);
+
+	uint8_t _address;	
+	TwoWire* _i2cPort;
 
 	uint8_t _CSPort;
 	SPI_CLK_t _spiFreq;
