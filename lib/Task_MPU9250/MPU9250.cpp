@@ -27,10 +27,10 @@ void MPU9250::setup(TwoWire* bus, uint8_t i2cAddr){
 	_i2cPort->begin();
 }
 
-MPU_STATUS MPU9250::begin()
+MPU_CONFIG_STATUS MPU9250::begin()
 {
 	// Debugging
-	bool isDoubleCheckSPI = false;
+	bool isDoubleCheck = false;
 
 	// Reset power of MPU to stabilize the SPI protocols
 	writeRegister(MPUREG_PWR_MGMT_1, PWR_MGMT_RST);
@@ -38,39 +38,40 @@ MPU_STATUS MPU9250::begin()
 
 	uint8_t checkIDMPU;
 	readRegister(MPUREG_WHO_AM_I, 1, &checkIDMPU);
-	if (checkIDMPU == MPU_ID) {
-		Log.notice("MPU9250 is available! Ready to setup magnetometer AK8963...");
-	}
-	else
-	{
-		Log.notice("MPU9250 is unavailble! Device Return: %X\n", checkIDMPU);
-		Log.notice("Init failed \n");
-		return MPU_STATUS::MPU_FAIL;
-	}
+	if (checkIDMPU != MPU_ID) 
+		return MPU_CONFIG_STATUS::MPU_ID_FAIL;
 
 	// Select source clock
-	writeRegister(MPUREG_PWR_MGMT_1, PWR_MGMT_CLKSEL, isDoubleCheckSPI);
+	writeRegister(MPUREG_PWR_MGMT_1, PWR_MGMT_CLKSEL);
 
 	// Enable I2C and set the speed to 400kHz
-	uint8_t UserControlConfig = USER_CTRL_I2C_MST_EN | USER_CTRL_I2C_IF_DIS;
-	writeRegister(MPUREG_USER_CTRL, UserControlConfig, isDoubleCheckSPI);		// Enable I2C for external sensors
-	writeRegister(MPUREG_I2C_MST_CTRL, I2C_MST_CTRL_400KHZ, isDoubleCheckSPI);  	// I2C at 400Khz
+	uint8_t UserControlConfig = USER_CTRL_I2C_MST_EN | USER_CTRL_I2C_IF_DIS; // Bring this later outside for setting up
+	if(writeRegister(MPUREG_USER_CTRL, UserControlConfig, isDoubleCheck) != MPU_RW_STATUS::WRITE_SUCCESS)
+		return MPU_USER_CTRL_FAIL;		// Enable I2C for external sensors
+	
+	if(writeRegister(MPUREG_I2C_MST_CTRL, I2C_MST_CTRL_400KHZ, isDoubleCheck) != MPU_RW_STATUS::WRITE_SUCCESS)
+		return MPU_I2C_MST_CTR_FAIL;  	// I2C at 400Khz
 
 	// Communication with AK8963: reset, configure mode
-	writeRegister(MPUREG_I2C_SLV0_ADDR, AK8963_I2C_ADDR, isDoubleCheckSPI);		//Set address of slave (AK8963 I2C: 0x0C -> Slave 0) in write mode
-	writeAK8963Reg(AK8963_CNTL2, AK8963_CNTL2_RST, isDoubleCheckSPI);		// Reset slave
-	// Ask ID
+	if(writeRegister(MPUREG_I2C_SLV0_ADDR, AK8963_I2C_ADDR, isDoubleCheck) != MPU_RW_STATUS::WRITE_SUCCESS)
+		return  MPU_SLV0_ADDR_FAIL;		// Set address of slave (AK8963 I2C: 0x0C -> Slave 0) in write mode
+	
 	uint8_t checkIDAK8963;
-	readAK8963Reg(AK8963_WIA, 1, &checkIDAK8963, isDoubleCheckSPI);
-	if (checkIDAK8963 == AK8963_Device_ID) {
-		Log.notice("Magnetometer AK8963 is available. Configurating... \n");
-	}
-	else
-	{
-		Log.notice("Magnetometer AK8963 not detected! Device Return: %X\n", checkIDAK8963); 
-	}
-	writeAK8963Reg(AK8963_CNTL1, AK8963_CNTL1_MODE1 | AK8963_CNTL1_16BIT, isDoubleCheckSPI); // Enable data streaming of AK8963
-	writeRegister(MPUREG_I2C_SLV0_CTRL, MPUREG_I2C_SLV0_CTRL_EN | 1, isDoubleCheckSPI); // Enable reading 1 Byte from of the slave at own sample rate.
+	if(writeAK8963Reg(AK8963_CNTL2, AK8963_CNTL2_RST, isDoubleCheck) != MPU_AK8963_STATUS::WRITE_SUCCESS) 
+		return MPU_AK8963_CTRL_FAIL;
+	
+	// Ask ID of AK8963
+	readAK8963Reg(AK8963_WIA, 1, &checkIDAK8963); // Double check is not available
+	if(checkIDAK8963 != AK8963_Device_ID) 
+		return MPU_AK8963_ID_FAIL;
+
+	if(writeAK8963Reg(AK8963_CNTL1, AK8963_CNTL1_MODE1 | AK8963_CNTL1_16BIT, isDoubleCheck) != MPU_AK8963_STATUS::WRITE_SUCCESS) 
+		return MPU_AK8963_FAIL; 
+	
+	// Enable data streaming of AK8963
+	// Enable reading 1 Byte from of the slave at own sample rate.
+	if(writeRegister(MPUREG_I2C_SLV0_CTRL, MPUREG_I2C_SLV0_CTRL_EN | 1, isDoubleCheck) != MPU_RW_STATUS::WRITE_SUCCESS) 
+		return MPU_SLV0_CTRL_FAIL; 
 	
 																						
 	// Setup bandwidth and DSP
@@ -82,8 +83,8 @@ MPU_STATUS MPU9250::begin()
 
 
 	// Ready to go
-	Log.notice("MPU9250 Startup sucessfully! ");
-
+	//Log.notice("MPU9250 Startup sucessfully! ");
+	return MPU_OK;
 }
 
 MPU9250::~MPU9250()
@@ -91,7 +92,7 @@ MPU9250::~MPU9250()
 	_spiPort->end();
 }
 
-void MPU9250::writeRegister(const uint8_t regAddr, uint8_t data, bool checkFlag)
+MPU_RW_STATUS MPU9250::writeRegister(const uint8_t regAddr, uint8_t data, bool checkFlag)
 {
 	if(_interface == USE_SPI){
 		// Config SPI Here
@@ -109,17 +110,23 @@ void MPU9250::writeRegister(const uint8_t regAddr, uint8_t data, bool checkFlag)
 		_i2cPort->write(data); // write the data
 		_i2cPort->endTransmission();
 	}
-
 	if (checkFlag) {
 		// Checking function
 		delayMicroseconds(10);
-		byte tmp;
-		readRegister(regAddr, 1, &tmp);
-		Log.notice("Address: %X | Written: %X | Readback: %X \n", regAddr, data, tmp);
+		uint8_t readback;
+		readRegister(regAddr, 1, &readback);
+		//Log.notice("Address: %X | Written: %X | Readback: %X \n", regAddr, data, tmp);
+		//Log.notice("R: %X W: %X Rx: %X \n", regAddr, data, readback);
+		if(readback == data)
+			return MPU_RW_STATUS::WRITE_SUCCESS;
+		else
+			return MPU_RW_STATUS::WRITE_FAIL;
 	}
+	// If no double check is required, just sendback success
+	return MPU_RW_STATUS::WRITE_SUCCESS;
 }
 
-int MPU9250::readRegister(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf)
+MPU_RW_STATUS MPU9250::readRegister(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf)
 {
 	if(_interface == USE_SPI){
 		// Config SPI Here
@@ -136,6 +143,7 @@ int MPU9250::readRegister(const uint8_t regAddr, const uint8_t nBytes, uint8_t* 
 		DIS_CS;
 
 		_spiPort->endTransaction();
+		return MPU_RW_STATUS::READ_SUCCESS;
 	}
 	else {
 		_i2cPort->beginTransmission(_address); // open the device
@@ -146,33 +154,52 @@ int MPU9250::readRegister(const uint8_t regAddr, const uint8_t nBytes, uint8_t* 
 			for (uint8_t i = 0; i < nBytes; i++) {
 				rxBuf[i] = _i2cPort->read();
 			}
-			return 1;
+			return MPU_RW_STATUS::READ_SUCCESS;
 		}
 		else {
-			return -1;
+			return MPU_RW_STATUS::READ_FAIL;
 		}
 		_i2cPort->endTransmission();
 	}
 }
 
-void MPU9250::writeAK8963Reg(const uint8_t subReg, uint8_t value, bool checkFlag)
+MPU_AK8963_STATUS MPU9250::writeAK8963Reg(const uint8_t subReg, uint8_t value, bool checkFlag)
 {
+	// //Set the I2C slave addres of AK8963 and set to write
+	// // Not allow to readback the value
+	// writeRegister(MPUREG_I2C_SLV0_ADDR, AK8963_I2C_ADDR, checkFlag = false);
+	// writeRegister(MPUREG_I2C_SLV0_REG, subReg, checkFlag = false); //I2C slave 0 register address from where to begin data transfer
+	// writeRegister(MPUREG_I2C_SLV0_DO, value, checkFlag = false); //Read 1 byte from the magnetometer
+	// return MPU_AK8963_STATUS::READ_SUCCESS;
 	//Set the I2C slave addres of AK8963 and set to write
-	writeRegister(MPUREG_I2C_SLV0_ADDR, AK8963_I2C_ADDR, checkFlag);
-	writeRegister(MPUREG_I2C_SLV0_REG, subReg, checkFlag); //I2C slave 0 register address from where to begin data transfer
-	writeRegister(MPUREG_I2C_SLV0_DO, value, checkFlag); //Read 1 byte from the magnetometer
+	// Not allow to readback the value
+	auto st1 = writeRegister(MPUREG_I2C_SLV0_ADDR, AK8963_I2C_ADDR, checkFlag);
+	auto st2 = writeRegister(MPUREG_I2C_SLV0_REG, subReg, checkFlag); //I2C slave 0 register address from where to begin data transfer
+	auto st3 = writeRegister(MPUREG_I2C_SLV0_DO, value, checkFlag); //Read 1 byte from the magnetometer
+	if((st1 != MPU_RW_STATUS::WRITE_SUCCESS) | (st2 != MPU_RW_STATUS::WRITE_SUCCESS) | (st3 != MPU_RW_STATUS::WRITE_SUCCESS))
+		return MPU_AK8963_STATUS::WRITE_FAIL;
+	else
+		return MPU_AK8963_STATUS::WRITE_SUCCESS;
 }
 
-void MPU9250::readAK8963Reg(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf, bool checkFlag)
+// Attention: blocking
+MPU_AK8963_STATUS MPU9250::readAK8963Reg(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf, bool checkFlag)
 {
-	writeRegister(MPUREG_I2C_SLV0_ADDR, READ_FLAG | AK8963_I2C_ADDR, checkFlag); // Set read slave 0
-	writeRegister(MPUREG_I2C_SLV0_REG, regAddr, checkFlag);
-	writeRegister(MPUREG_I2C_SLV0_CTRL, MPUREG_I2C_SLV0_CTRL_EN | (nBytes), checkFlag); //Read 1 byte
+	auto status1 = writeRegister(MPUREG_I2C_SLV0_ADDR, READ_FLAG | AK8963_I2C_ADDR, checkFlag); // Set read slave 0
+	auto status2 = writeRegister(MPUREG_I2C_SLV0_REG, regAddr, checkFlag);
+	auto status3 = writeRegister(MPUREG_I2C_SLV0_CTRL, MPUREG_I2C_SLV0_CTRL_EN | (nBytes), checkFlag); //Read 1 byte
 
-	// wait until new data is availble
-	delay(50);
-	// Read here
-	readRegister(MPUREG_EXT_SENS_DATA_00, nBytes, rxBuf);
+	if(status1 != MPU_RW_STATUS::WRITE_SUCCESS | status2 != MPU_RW_STATUS::WRITE_SUCCESS | status3 != MPU_RW_STATUS::WRITE_SUCCESS)
+		return MPU_AK8963_STATUS::READ_FAIL;
+	else{
+		// wait until new data is availble
+		delay(50);
+		// Read here
+		if(readRegister(MPUREG_EXT_SENS_DATA_00, nBytes, rxBuf)!= MPU_RW_STATUS::READ_SUCCESS)
+			return MPU_AK8963_STATUS::READ_FAIL;
+	}
+
+	return MPU_AK8963_STATUS::READ_SUCCESS;
 }
 
 void MPU9250::setSensitivity(Mpu9250_ImuScale_t imuScale, Mpu9250_GyroScale_t gyroScale)

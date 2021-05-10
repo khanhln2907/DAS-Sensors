@@ -155,9 +155,31 @@ enum MPU_INTERFACE {
 	USE_I2C = 1
 };
 
-enum MPU_STATUS {
-	MPU_FAIL = 0, 
+enum MPU_CONFIG_STATUS {
+	MPU_FAIL = -99, 
+	MPU_ID_FAIL,
+	MPU_USER_CTRL_FAIL,
+	MPU_I2C_MST_CTR_FAIL,
+	MPU_SLV0_ADDR_FAIL,
+	MPU_SLV0_CTRL_FAIL,
+	MPU_AK8963_CTRL_FAIL,
+	MPU_AK8963_FAIL,
+	MPU_AK8963_ID_FAIL,
 	MPU_OK
+};
+
+enum class MPU_RW_STATUS {
+	WRITE_SUCCESS = 0,
+	WRITE_FAIL,
+	READ_SUCCESS,
+	READ_FAIL
+};
+
+enum class MPU_AK8963_STATUS{
+	WRITE_SUCCESS = 0,
+	WRITE_FAIL,
+	READ_SUCCESS,
+	READ_FAIL
 };
 
 class MPU9250 {
@@ -166,15 +188,15 @@ public:
 
 	void setup(SPIClass* spix, uint8_t cs);
 	void setup(TwoWire* bus, uint8_t i2cAddr);
-	MPU_STATUS begin();
+	MPU_CONFIG_STATUS begin();
 
 	~MPU9250();
 
-	void writeRegister(const uint8_t regAddr, uint8_t value, bool checkFlag = false);
-	int readRegister(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf);
+	MPU_RW_STATUS writeRegister(const uint8_t regAddr, uint8_t value, bool checkFlag = false);
+	MPU_RW_STATUS readRegister(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf);
 
-	void writeAK8963Reg(const uint8_t subReg, uint8_t value, bool checkFlag = false);
-	void readAK8963Reg(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf, bool checkFlag = false);
+	MPU_AK8963_STATUS writeAK8963Reg(const uint8_t subReg, uint8_t value, bool checkFlag = false);
+	MPU_AK8963_STATUS readAK8963Reg(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf, bool checkFlag = false);
 
 	void setSensitivity(Mpu9250_ImuScale_t imuScale, Mpu9250_GyroScale_t gyroScale);
 

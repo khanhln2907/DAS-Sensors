@@ -16,7 +16,7 @@ void TaskSampleUARTBase::begin(HardwareSerial* serial, unsigned long baud)
 	_port->begin(baud);
 
 }
-
+	
 void TaskSampleUARTBase::loop(void* data)
 {
 	bool isValidPacket = false;

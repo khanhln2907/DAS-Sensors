@@ -16,5 +16,6 @@ void TaskSampleMPU9250::loop(void* data){
 
 void TaskSampleMPU9250::begin(SPIClass* SPIx, uint8_t cs){
     _imuHandle.setup(SPIx, cs);
-    _imuHandle.begin();
+    MPU_CONFIG_STATUS status = _imuHandle.begin();
+    Log.notice("Init: %d \n", status);
 }
