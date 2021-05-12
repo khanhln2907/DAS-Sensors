@@ -13,3 +13,5 @@
 *.elf
 */*/Debug
 WS_terminal.code-workspace
+.vs/
+.vs
