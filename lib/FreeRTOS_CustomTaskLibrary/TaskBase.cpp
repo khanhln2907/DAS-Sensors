@@ -92,5 +92,5 @@ void TaskBase::stop() {
 
 void TaskBase::taskSleepInterval()
 {
-	taskSleepMllis((1e3 / this->getSampleRate()) / portTICK_PERIOD_MS);
+	taskSleepMllis((1e3 / this->getTaskRate()) / portTICK_PERIOD_MS);
 }

@@ -19,7 +19,7 @@ public:
 
 protected:
 
-    virtual uint16_t getSampleRate();
+    virtual uint16_t getTaskRate();
     virtual void loop(void* data);
     
 private:

@@ -50,7 +50,7 @@ TaskSampleGPS::TaskSampleGPS(uint16_t packetSize) : TaskSampleUARTBase(packetSiz
 {
 }
 
-uint16_t TaskSampleGPS::getSampleRate()
+uint16_t TaskSampleGPS::getTaskRate()
 {
 	return 100;
 }

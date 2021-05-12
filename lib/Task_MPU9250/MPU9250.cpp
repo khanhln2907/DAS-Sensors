@@ -75,10 +75,8 @@ MPU_CONFIG_STATUS MPU9250::begin()
 	
 																						
 	// Setup bandwidth and DSP
-
-	// Default Value:
-
-
+	if(configureDLP() == false)
+		return MPU_FAIL;
 
 
 
@@ -255,22 +253,22 @@ void MPU9250::sample()
 {
 	uint8_t response[21];
 	readRegister(MPUREG_ACC_X_H, 21, response);
-	Log.notice("Data buffer: ");
-	for (int i = 0; i < 20; i++) {
-		Log.notice(" %X ", response[i]);
-	}
-	Log.notice("\n");
+	// Log.notice("Data buffer: ");
+	// for (int i = 0; i < 20; i++) {
+	// 	Log.notice(" %X ", response[i]);
+	// }
+	// Log.notice("\n");
 
-	_accel.x = (double)(((int16_t)response[0] << 8) | response[1]) / _imuScale - _imuBias.x;
-	_accel.y = (double)(((int16_t)response[2] << 8) | response[3]) / _imuScale - _imuBias.y;
-	_accel.z = (double)(((int16_t)response[4] << 8) | response[5]) / _imuScale - _imuBias.z;
-	temparature = (double)(((int16_t)response[7] << 8) | response[6]);
-	_attRate.p = (double)(((int16_t)response[9] << 8) | response[8]) / _gyroScale - _gyroBias.p;
-	_attRate.q = (double)(((int16_t)response[11] << 8) | response[10]) / _gyroScale - _gyroBias.q;
-	_attRate.r = (double)(((int16_t)response[13] << 8) | response[12]) / _gyroScale - _gyroBias.r;
-	_mag.x = (double)(((int16_t)response[15] << 8) | response[14]); // Must be compensated as well fuck !
-	_mag.y = (double)(((int16_t)response[17] << 8) | response[16]);
-	_mag.z = (double)(((int16_t)response[19] << 8) | response[18]);
+	// _accel.x = (double)(((int16_t)response[0] << 8) | response[1]) / _imuScale - _imuBias.x;
+	// _accel.y = (double)(((int16_t)response[2] << 8) | response[3]) / _imuScale - _imuBias.y;
+	// _accel.z = (double)(((int16_t)response[4] << 8) | response[5]) / _imuScale - _imuBias.z;
+	// temparature = (double)(((int16_t)response[7] << 8) | response[6]);
+	// _attRate.p = (double)(((int16_t)response[9] << 8) | response[8]) / _gyroScale - _gyroBias.p;
+	// _attRate.q = (double)(((int16_t)response[11] << 8) | response[10]) / _gyroScale - _gyroBias.q;
+	// _attRate.r = (double)(((int16_t)response[13] << 8) | response[12]) / _gyroScale - _gyroBias.r;
+	// _mag.x = (double)(((int16_t)response[15] << 8) | response[14]); // Must be compensated as well fuck !
+	// _mag.y = (double)(((int16_t)response[17] << 8) | response[16]);
+	// _mag.z = (double)(((int16_t)response[19] << 8) | response[18]);
 }
 
 
@@ -285,4 +283,19 @@ void MPU9250::printData()
 	Log.notice(str);
 	sprintf(str, "Temparature  : %.3f deg \n", temparature);
 	Log.notice(str);
+}
+
+bool MPU9250::configureDLP()
+{
+	byte enDLP = 0b11; // Default Gyro scale, turn off DLP
+	if(writeRegister(MPUREG_GYRO_CONFIG, enDLP, true) != MPU_RW_STATUS::WRITE_SUCCESS)
+		return false;
+	
+	byte deAccFilter = 0b1 << 3; // Default Gyro scale, turn off DLP
+	if(writeRegister(MPUREG_ACC_CONFIG_2, deAccFilter, true) != MPU_RW_STATUS::WRITE_SUCCESS)
+		return false;
+
+
+
+
 }

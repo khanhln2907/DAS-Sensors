@@ -182,6 +182,14 @@ enum class MPU_AK8963_STATUS{
 	READ_FAIL
 };
 
+enum class MPU_DLP{
+
+};
+
+
+#define MPU_DLPF_CFG_EN 0b00
+//#define 
+
 class MPU9250 {
 public:
 	MPU9250();
@@ -192,11 +200,7 @@ public:
 
 	~MPU9250();
 
-	MPU_RW_STATUS writeRegister(const uint8_t regAddr, uint8_t value, bool checkFlag = false);
-	MPU_RW_STATUS readRegister(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf);
-
-	MPU_AK8963_STATUS writeAK8963Reg(const uint8_t subReg, uint8_t value, bool checkFlag = false);
-	MPU_AK8963_STATUS readAK8963Reg(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf, bool checkFlag = false);
+	
 
 	void setSensitivity(Mpu9250_ImuScale_t imuScale, Mpu9250_GyroScale_t gyroScale);
 
@@ -229,6 +233,15 @@ private:
 	Magnetometer_t _mag;
 
 	float temparature;
+
+	MPU_RW_STATUS writeRegister(const uint8_t regAddr, uint8_t value, bool checkFlag = false);
+	MPU_RW_STATUS readRegister(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf);
+
+	MPU_AK8963_STATUS writeAK8963Reg(const uint8_t subReg, uint8_t value, bool checkFlag = false);
+	MPU_AK8963_STATUS readAK8963Reg(const uint8_t regAddr, const uint8_t nBytes, uint8_t* rxBuf, bool checkFlag = false);
+
+	bool configureDLP();
+
 };
 
 

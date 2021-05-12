@@ -54,7 +54,7 @@ public:
 	static void taskSleepMllis(int ms);
 
 protected:
-	virtual uint16_t getSampleRate() = 0;
+	virtual uint16_t getTaskRate() = 0;
 	virtual void loop(void* data) = 0; // Make run pure virtual
 
 private:

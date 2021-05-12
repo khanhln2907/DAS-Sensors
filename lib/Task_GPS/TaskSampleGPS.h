@@ -70,7 +70,7 @@ public:
 
 protected:
 
-    uint16_t getSampleRate();
+    uint16_t getTaskRate();
 
     uint8_t getNHeaderBytes();
     virtual const uint8_t* const getHeaderBytes(uint8_t* nHeader);
