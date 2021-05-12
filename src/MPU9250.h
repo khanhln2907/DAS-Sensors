@@ -6,18 +6,18 @@
 
 
 typedef enum {
-	AFS_SEL_2g,
-	AFS_SEL_4g,
-	AFS_SEL_8g,
-	AFS_SEL_16g
+	ACC_2g = 2,
+	ACC_4g = 4,
+	AACC_8g = 8,
+	ACC_16g = 16
 }Mpu9250_ImuScale_t; // [LSB/g]
 
 
 typedef enum {
-	FS_SEL_250dps,
-	FS_SEL_500dps,
-	FS_SEL_1000dps,
-	FS_SEL_2000dps
+	GYRO_250dps = 250,
+	GYRO_500dps = 500,
+	GYRO_1000dps = 1000,
+	GYRO_2000dps = 2000
 }Mpu9250_GyroScale_t; // [Deg/g]
 
 // MPU9250
@@ -222,13 +222,13 @@ private:
 	void requestGyro();
 	void requestMag();
 
-	double _imuScale = 1;
+	double _imuScale = ACC_2g;
 	Acceleration_t _accel;
-	Acceleration_t _imuBias;
+	Acceleration_t _imuBias = { 0,0,0 };
 
-	double _gyroScale = 1;
+	double _gyroScale = GYRO_250dps;
 	AttitudeRate_t _attRate;
-	AttitudeRate_t _gyroBias;
+	AttitudeRate_t _gyroBias = {0, 0, 0};
 
 	Magnetometer_t _mag;
 

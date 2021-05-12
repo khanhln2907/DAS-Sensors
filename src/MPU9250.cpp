@@ -253,36 +253,38 @@ void MPU9250::sample()
 {
 	uint8_t response[21];
 	readRegister(MPUREG_ACC_X_H, 21, response);
-	// Log.notice("Data buffer: ");
-	// for (int i = 0; i < 20; i++) {
-	// 	Log.notice(" %X ", response[i]);
-	// }
-	// Log.notice("\n");
-
-	// _accel.x = (double)(((int16_t)response[0] << 8) | response[1]) / _imuScale - _imuBias.x;
-	// _accel.y = (double)(((int16_t)response[2] << 8) | response[3]) / _imuScale - _imuBias.y;
-	// _accel.z = (double)(((int16_t)response[4] << 8) | response[5]) / _imuScale - _imuBias.z;
-	// temparature = (double)(((int16_t)response[7] << 8) | response[6]);
-	// _attRate.p = (double)(((int16_t)response[9] << 8) | response[8]) / _gyroScale - _gyroBias.p;
-	// _attRate.q = (double)(((int16_t)response[11] << 8) | response[10]) / _gyroScale - _gyroBias.q;
-	// _attRate.r = (double)(((int16_t)response[13] << 8) | response[12]) / _gyroScale - _gyroBias.r;
-	// _mag.x = (double)(((int16_t)response[15] << 8) | response[14]); // Must be compensated as well fuck !
-	// _mag.y = (double)(((int16_t)response[17] << 8) | response[16]);
-	// _mag.z = (double)(((int16_t)response[19] << 8) | response[18]);
+	 /*Log.notice("Data buffer: ");
+	 for (int i = 0; i < 20; i++) {
+	 	Log.notice(" %X ", response[i]);
+	 }
+	 Log.notice("\n");*/
+	_imuScale = 16384;
+	_gyroScale = 8192 / 125;
+	 _accel.x = (double)(((int16_t)response[0] << 8) | response[1]) / _imuScale - _imuBias.x;
+	 _accel.y = (double)(((int16_t)response[2] << 8) | response[3]) / _imuScale - _imuBias.y;
+	 _accel.z = (double)(((int16_t)response[4] << 8) | response[5]) / _imuScale - _imuBias.z;
+	 temparature = (float)(((int16_t)response[6] << 8) | response[7]);
+	 _attRate.p = (double)(((int16_t)response[8] << 8) | response[9]) / _gyroScale - _gyroBias.p;
+	 _attRate.q = (double)(((int16_t)response[10] << 8) | response[11]) / _gyroScale - _gyroBias.q;
+	 _attRate.r = (double)(((int16_t)response[12] << 8) | response[13]) / _gyroScale - _gyroBias.r;
+	 _mag.x = (double)(((int16_t)response[15] << 8) | response[14]); // Must be compensated as well fuck !
+	 _mag.y = (double)(((int16_t)response[17] << 8) | response[16]);
+	 _mag.z = (double)(((int16_t)response[19] << 8) | response[18]);
 }
 
 
 void MPU9250::printData()
 {
 	char str[50];
-	sprintf(str, "Acceleration : x: %.3f  y: %.3f  z: %.3f \n", _accel.x, _accel.y, _accel.z);
+	sprintf(str, "Time: %d T: %.3f \n \n", (unsigned long) micros(), temparature);
 	Log.notice(str);
-	sprintf(str, "Attitude Rate: p: %.3f  q: %.3f  r: %.3f \n", _attRate.p, _attRate.q, _attRate.r);
+	sprintf(str, "A: x: %.3f  y: %.3f  z: %.3f \n", _accel.x, _accel.y, _accel.z);
 	Log.notice(str);
-	sprintf(str, "Magnetometer : x: %.3f  y: %.3f  z: %.3f \n", _mag.x, _mag.y, _mag.z);
+	sprintf(str, "G: p: %.3f  q: %.3f  r: %.3f \n", _attRate.p, _attRate.q, _attRate.r);
 	Log.notice(str);
-	sprintf(str, "Temparature  : %.3f deg \n", temparature);
+	sprintf(str, "M: x: %.3f  y: %.3f  z: %.3f \n", _mag.x, _mag.y, _mag.z);
 	Log.notice(str);
+	
 }
 
 bool MPU9250::configureDLP()

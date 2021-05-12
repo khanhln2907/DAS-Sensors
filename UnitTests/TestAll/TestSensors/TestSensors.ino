@@ -6,13 +6,10 @@
 
 
 #include "FreeRTOS.h"
-//#include "streambuffer.h"
 #include <ArduinoLog.h>
 #include <SPI.h>
 #include "TaskSampleGPS.h"
 #include "TaskSampleMPU9250.h"
-//#include "TaskUARTLogging.h"
-//#include "MPU9250.h"
 #include "PortConfig.h"
 #if CONFIG_FREERTOS_UNICORE
 static const BaseType_t app_cpu = 0;
@@ -25,6 +22,7 @@ TaskSampleGPS GPS_h(80);
 static TaskHandle_t taskSampleGPS_h;
 
 TaskSampleMPU9250 IMU_t_h;
+static TaskHandle_t taskSampleIMU_h;
 
 //TaskUARTLogging Logging_h;
 
@@ -43,6 +41,8 @@ void setup() {
 
     //imu.setup(&Wire, MPU_I2C_ADDR);
     IMU_t_h.begin(&SPI, 2);
+    IMU_t_h.start("TaskSampleIMU", 20000, NULL, 1, &taskSampleIMU_h, app_cpu);
+
 }
 
 // the loop function runs over and over again until power down or reset

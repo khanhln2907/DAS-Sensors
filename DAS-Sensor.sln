@@ -5,9 +5,45 @@ VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DAS-Sensor", "DAS-Sensor.vcxitems", "{7A70409F-8AAC-48EE-8E4E-4CDE42049756}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSensors", "UnitTests\TestAll\TestSensors\TestSensors.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DAS-Common", "..\DAS-Common.git\DAS-Common.vcxitems", "{78685E7D-7C8E-4C91-9B2C-086607B86A3C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{54033610-0D43-4807-91FC-C50A96BE1DF8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{8875BAC2-44CF-4BD2-A2B2-1AECD3C50D15}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{53BF334F-9553-4B6F-8E4D-D868702186DB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeRTOS_Custom", "..\FreeRTOS_Custom.git\FreeRTOS_Custom.vcxitems", "{7B4CE8EA-6EE0-423A-AE09-18C788082BF7}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		..\DAS-Common.git\DAS-Common.vcxitems*{78685e7d-7c8e-4c91-9b2c-086607b86a3c}*SharedItemsImports = 9
+		DAS-Sensor.vcxitems*{7a70409f-8aac-48ee-8e4e-4cde42049756}*SharedItemsImports = 9
+		..\FreeRTOS_Custom.git\FreeRTOS_Custom.vcxitems*{7b4ce8ea-6ee0-423a-ae09-18c788082bf7}*SharedItemsImports = 9
+		..\DAS-Common.git\DAS-Common.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		DAS-Sensor.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+		..\FreeRTOS_Custom.git\FreeRTOS_Custom.vcxitems*{c5f80730-f44f-4478-bdae-6634efc2ca88}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7A70409F-8AAC-48EE-8E4E-4CDE42049756} = {8875BAC2-44CF-4BD2-A2B2-1AECD3C50D15}
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88} = {53BF334F-9553-4B6F-8E4D-D868702186DB}
+		{78685E7D-7C8E-4C91-9B2C-086607B86A3C} = {54033610-0D43-4807-91FC-C50A96BE1DF8}
+		{7B4CE8EA-6EE0-423A-AE09-18C788082BF7} = {54033610-0D43-4807-91FC-C50A96BE1DF8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {32EF5CA0-E722-4C25-BE56-0652BF845D20}

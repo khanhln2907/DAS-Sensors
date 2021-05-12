@@ -16,6 +16,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="TestSensors.ino" />
+    <None Include="src\arduino folders read me.txt">
+      <Filter>Misc Files</Filter>
+    </None>
   </ItemGroup>
- 
+  <ItemGroup>
+    <ClInclude Include="__vm\.TestSensors.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
