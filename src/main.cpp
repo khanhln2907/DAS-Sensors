@@ -1,14 +1,41 @@
 #include <Arduino.h>
-#include <BasicType.h>
+#include "BasicType.h"
+#include "ArduinoLog.h"
+#include "HardwareSerial.h"
 
-void setup() {
-  // put your setup code here, to run once:
-  Attitude_t rate;
-  rate.phi = 0;
-  rate.theta = 0;
-  rate.psi = 0;
+//#define USING_MAKEFILE
+//#define __MK66FX1M0__
+
+
+void setup(){
+    pinMode(13, OUTPUT);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void loop(){
+    digitalWriteFast(13, HIGH);
+    delay(500);
+    digitalWriteFast(13, LOW);
+    delay(500);
+    Serial.printf("Hello from Sensors \n");
+}
+
+
+extern "C" int main(void)
+{
+#ifdef USING_MAKEFILE
+	// To use Teensy 3.0 without Arduino, simply put your code here.
+	// For example:
+	setup();
+	while (1) {
+    loop();
+	}
+
+#else
+	// Arduino's main() function just calls setup() and loop()....
+	setup();
+	while (1) {
+		loop();
+		yield();
+	}
+#endif
 }

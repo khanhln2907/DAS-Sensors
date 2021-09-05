@@ -1,8 +1,8 @@
 #pragma once
 #include <Arduino.h>
 #include <SPI.h>
-#include <Wire.h>
-#include <CommonType.h>
+//#include <Wire.h>
+#include <BasicType.h>
 
 
 typedef enum {
@@ -195,7 +195,7 @@ public:
 	MPU9250();
 
 	void setup(SPIClass* spix, uint8_t cs);
-	void setup(TwoWire* bus, uint8_t i2cAddr);
+	//void setup(TwoWire* bus, uint8_t i2cAddr);
 	MPU_CONFIG_STATUS begin();
 
 	~MPU9250();
@@ -213,7 +213,7 @@ private:
 	SPISettings _spiHS = SPISettings(20000000, MSBFIRST, SPI_MODE3);
 
 	uint8_t _address;	
-	TwoWire* _i2cPort;
+	//TwoWire* _i2cPort;
 
 	uint8_t _CSPort;
 	SPI_CLK_t _spiFreq;

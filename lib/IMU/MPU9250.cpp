@@ -20,12 +20,12 @@ void MPU9250::setup(SPIClass* spix, uint8_t cs){
 }
 
 
-void MPU9250::setup(TwoWire* bus, uint8_t i2cAddr){
-	_interface = USE_I2C;
-	_i2cPort = bus;
-	_address = i2cAddr;
-	_i2cPort->begin();
-}
+// void MPU9250::setup(TwoWire* bus, uint8_t i2cAddr){
+// 	_interface = USE_I2C;
+// 	_i2cPort = bus;
+// 	_address = i2cAddr;
+// 	_i2cPort->begin();
+// }
 
 MPU_CONFIG_STATUS MPU9250::begin()
 {
@@ -103,10 +103,10 @@ MPU_RW_STATUS MPU9250::writeRegister(const uint8_t regAddr, uint8_t data, bool c
 		_spiPort->endTransaction();
 	}
 	else {
-		_i2cPort->beginTransmission(_address); // open the device
-		_i2cPort->write(regAddr); // write the register address
-		_i2cPort->write(data); // write the data
-		_i2cPort->endTransmission();
+		// _i2cPort->beginTransmission(_address); // open the device
+		// _i2cPort->write(regAddr); // write the register address
+		// _i2cPort->write(data); // write the data
+		// _i2cPort->endTransmission();
 	}
 	if (checkFlag) {
 		// Checking function
@@ -144,20 +144,20 @@ MPU_RW_STATUS MPU9250::readRegister(const uint8_t regAddr, const uint8_t nBytes,
 		return MPU_RW_STATUS::READ_SUCCESS;
 	}
 	else {
-		_i2cPort->beginTransmission(_address); // open the device
-		_i2cPort->write(regAddr); // specify the starting register address
-		_i2cPort->endTransmission(false);
-		auto nBytesGet = _i2cPort->requestFrom(_address, nBytes); // specify the number of bytes to receive
-		if (nBytesGet == nBytes) {
-			for (uint8_t i = 0; i < nBytes; i++) {
-				rxBuf[i] = _i2cPort->read();
-			}
-			return MPU_RW_STATUS::READ_SUCCESS;
-		}
-		else {
-			return MPU_RW_STATUS::READ_FAIL;
-		}
-		_i2cPort->endTransmission();
+		// _i2cPort->beginTransmission(_address); // open the device
+		// _i2cPort->write(regAddr); // specify the starting register address
+		// _i2cPort->endTransmission(false);
+		// auto nBytesGet = _i2cPort->requestFrom(_address, nBytes); // specify the number of bytes to receive
+		// if (nBytesGet == nBytes) {
+		// 	for (uint8_t i = 0; i < nBytes; i++) {
+		// 		rxBuf[i] = _i2cPort->read();
+		// 	}
+		// 	return MPU_RW_STATUS::READ_SUCCESS;
+		// }
+		// else {
+		// 	return MPU_RW_STATUS::READ_FAIL;
+		// }
+		// _i2cPort->endTransmission();
 	}
 }
 
