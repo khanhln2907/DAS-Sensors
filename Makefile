@@ -1,5 +1,5 @@
 # The name of your project (used to name the compiled .hex file)
-TARGET = "Common"
+TARGET = "Sensor"
 #$(notdir $(CURDIR))
 
 # The teensy version to use, 30, 31, 35, 36, or LC
@@ -16,7 +16,7 @@ TEENSY_CORE_SPEED = 180000000
 OPTIONS = -DUSB_SERIAL -DLAYOUT_US_ENGLISH
 
 # directory to build in
-BUILDDIR = $(abspath $(CURDIR)/.makefile_build)
+BUILDDIR = $(abspath $(CURDIR)/.build/.local)
 
 #************************************************************************
 # Location of Teensyduino utilities, Toolchain, and Arduino Libraries.
@@ -26,12 +26,6 @@ BUILDDIR = $(abspath $(CURDIR)/.makefile_build)
 
 # path location for Teensy Loader, teensy_post_compile and teensy_reboot
 TOOLSPATH = $(CURDIR)/tools
-
-ifeq ($(OS),Windows_NT)
-    $(error What is Win Dose?)
-else
-    UNAME_S := $(shell uname -s)
-endif
 
 # path location for Teensy 3 core
 COREPATH = ../cores_git/teensy3
@@ -146,14 +140,6 @@ flash: $(TARGET).hex
 	@echo Flashing...
 	$(UPLOADER) $(TEENSY_FLAGS) $<  
 
-post_compile: $(TARGET).hex
-	@$(abspath $(TOOLSPATH))/teensy_post_compile -file="$(basename $<)" -path=$(CURDIR) -tools="$(abspath $(TOOLSPATH))"
-
-reboot:
-	@-$(abspath $(TOOLSPATH))/teensy_reboot
-
-upload: post_compile reboot
-
 $(BUILDDIR)/%.o: %.c
 	@echo -e "[CC]\t$<"
 	@mkdir -p "$(dir $@)"
@@ -172,7 +158,6 @@ $(BUILDDIR)/%.o: %.ino
 $(TARGET).elf: $(OBJS) $(LDSCRIPT)
 	@echo -e "[LD]\t$@"
 	@$(CC) $(LDFLAGS) -o "$@" $(OBJS) $(LIBS) 	
-# -o $(BUILDDIR)
 
 %.hex: %.elf
 	@echo -e "[HEX]\t$@"

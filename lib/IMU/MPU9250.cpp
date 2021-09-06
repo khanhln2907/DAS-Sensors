@@ -158,6 +158,7 @@ MPU_RW_STATUS MPU9250::readRegister(const uint8_t regAddr, const uint8_t nBytes,
 		// 	return MPU_RW_STATUS::READ_FAIL;
 		// }
 		// _i2cPort->endTransmission();
+		return MPU_RW_STATUS::READ_FAIL;
 	}
 }
 
@@ -187,7 +188,8 @@ MPU_AK8963_STATUS MPU9250::readAK8963Reg(const uint8_t regAddr, const uint8_t nB
 	auto status2 = writeRegister(MPUREG_I2C_SLV0_REG, regAddr, checkFlag);
 	auto status3 = writeRegister(MPUREG_I2C_SLV0_CTRL, MPUREG_I2C_SLV0_CTRL_EN | (nBytes), checkFlag); //Read 1 byte
 
-	if(status1 != MPU_RW_STATUS::WRITE_SUCCESS | status2 != MPU_RW_STATUS::WRITE_SUCCESS | status3 != MPU_RW_STATUS::WRITE_SUCCESS)
+	if((status1 != MPU_RW_STATUS::WRITE_SUCCESS) | (status2 != MPU_RW_STATUS::WRITE_SUCCESS)
+	 | (status3 != MPU_RW_STATUS::WRITE_SUCCESS))
 		return MPU_AK8963_STATUS::READ_FAIL;
 	else{
 		// wait until new data is availble
@@ -230,8 +232,8 @@ void MPU9250::requestGyro()
 void MPU9250::requestMag()
 {
 	uint8_t response[7];
-	float data;
-	int i;
+	//float data;
+	//int i;
 
 	readAK8963Reg(AK8963_HXL, 7, response); // Blocking inside, must be debugged and evaluated. // Request AK89
 	readRegister(MPUREG_EXT_SENS_DATA_00, 7, response);
@@ -276,7 +278,7 @@ void MPU9250::sample()
 void MPU9250::printData()
 {
 	char str[50];
-	sprintf(str, "Time: %d T: %.3f \n \n", (unsigned long) micros(), temparature);
+	sprintf(str, "Time: %lu T: %.3f \n \n", (unsigned long) micros(), temparature);
 	Log.notice(str);
 	sprintf(str, "A: x: %.3f  y: %.3f  z: %.3f \n", _accel.x, _accel.y, _accel.z);
 	Log.notice(str);
@@ -299,5 +301,5 @@ bool MPU9250::configureDLP()
 
 
 
-
+	return true;
 }
