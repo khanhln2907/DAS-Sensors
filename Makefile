@@ -16,7 +16,7 @@ TEENSY_CORE_SPEED = 180000000
 OPTIONS = -DUSB_SERIAL -DLAYOUT_US_ENGLISH
 
 # directory to build in
-BUILDDIR = $(abspath $(CURDIR)/.build/.local)
+BUILDDIR = $(abspath $(CURDIR)/.build/.debug)
 
 #************************************************************************
 # Location of Teensyduino utilities, Toolchain, and Arduino Libraries.
@@ -134,9 +134,9 @@ all: hex
 build: 
 	$(TARGET).elf
 
-hex: $(TARGET).hex
+hex: $(BUILDDIR)/$(TARGET).hex
 
-flash: $(TARGET).hex 
+flash: $(BUILDDIR)/$(TARGET).hex 
 	@echo Flashing...
 	$(UPLOADER) $(TEENSY_FLAGS) $<  
 
@@ -155,7 +155,7 @@ $(BUILDDIR)/%.o: %.ino
 	@mkdir -p "$(dir $@)"
 	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(L_INC) -o "$@" -x c++ -include Arduino.h -c "$<"
 
-$(TARGET).elf: $(OBJS) $(LDSCRIPT)
+$(BUILDDIR)/$(TARGET).elf: $(OBJS) $(LDSCRIPT)
 	@echo -e "[LD]\t$@"
 	@$(CC) $(LDFLAGS) -o "$@" $(OBJS) $(LIBS) 	
 
@@ -170,6 +170,12 @@ $(TARGET).elf: $(OBJS) $(LDSCRIPT)
 clean:
 	@echo Cleaning...
 	@rm -rf "$(BUILDDIR)"
+	@rm -f "$(TARGET).elf" "$(TARGET).hex"
+
+rebuild:
+	make clean
+	@rm -rf "$(BUILDDIR)"
+	@rm -rf $(filter %/, "$(BUILDDIR))
 	@rm -f "$(TARGET).elf" "$(TARGET).hex"
 
 print:

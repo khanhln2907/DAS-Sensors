@@ -13,9 +13,9 @@ void setup(){
 
 void loop(){
     digitalWriteFast(13, HIGH);
-    delay(50);
+    delay(500);
     digitalWriteFast(13, LOW);
-    delay(50);
+    delay(500);
     Serial.printf("Hello from Sensors \n");
 }
 
