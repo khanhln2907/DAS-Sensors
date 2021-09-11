@@ -2,10 +2,12 @@
 #include "BasicType.h"
 #include "ArduinoLog.h"
 #include "HardwareSerial.h"
+#include "CircularBuffer.h"
 
 //#define USING_MAKEFILE
 //#define __MK66FX1M0__
 
+CircularBuffer<int> tmp(20);
 
 void setup(){
     pinMode(13, OUTPUT);

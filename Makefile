@@ -16,7 +16,7 @@ TEENSY_CORE_SPEED = 180000000
 OPTIONS = -DUSB_SERIAL -DLAYOUT_US_ENGLISH
 
 # directory to build in
-BUILDDIR = $(abspath $(CURDIR)/.build/.debug)
+BUILDDIR = $(abspath $(CURDIR)/Build)
 
 #************************************************************************
 # Location of Teensyduino utilities, Toolchain, and Arduino Libraries.
@@ -107,16 +107,19 @@ CPP_FILES := $(wildcard src/*.cpp)
 INO_FILES := $(wildcard src/*.ino)
 
 # Dependencies
-DEP_FILES_PATH = ../Common_git/lib
+DEP_FILES_DIR_NAME = Common_git
+DEP_FILES_PATH = ../$(DEP_FILES_DIR_NAME)/lib
 DEP_FILES_CPP = $(wildcard $(DEP_FILES_PATH)/*/*.cpp)
 
-# include paths for libraries
+# Include paths for libraries
 L_INC := $(foreach lib,$(filter %/, $(wildcard $(LIBRARYPATH)/*/)), -I$(lib))
 L_INC += $(foreach lib,$(filter %/, $(wildcard $(DEP_FILES_PATH)/*/)), -I$(lib)) 
 
-SOURCES := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(INO_FILES:.ino=.o) $(TC_FILES:.c=.o) $(TCPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o) $(DEP_FILES_CPP:.cpp=.o)
+# Object construction for local libraries
+SOURCES := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(INO_FILES:.ino=.o) $(TC_FILES:.c=.o) $(TCPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o) #$(DEP_FILES_CPP:.cpp=.o)
 OBJS := $(foreach src,$(SOURCES), $(BUILDDIR)/$(src))
 
+# Object construction for dependencies
 
 # Teensyduino Commands
 UPLOADER = teensy_loader_cli
@@ -180,3 +183,8 @@ rebuild:
 
 print:
 	@echo $(L_INC)
+	@echo $(SOURCES)
+
+delpio:
+	@echo Cleaning PIO dep...
+	@rm -rf ".pio/libdeps"
