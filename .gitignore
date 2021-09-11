@@ -26,3 +26,5 @@ WS_terminal.code-workspace
 *.hex
 .makefile_build
 .vscode/*
+Build/
+build/

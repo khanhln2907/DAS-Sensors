@@ -16,14 +16,13 @@ TEENSY_CORE_SPEED = 180000000
 OPTIONS = -DUSB_SERIAL -DLAYOUT_US_ENGLISH
 
 # directory to build in
-BUILDDIR = $(abspath $(CURDIR)/Build/)
+BUILDDIR = $(abspath $(CURDIR)/build/)
 
 #************************************************************************
 # Location of Teensyduino utilities, Toolchain, and Arduino Libraries.
 # To use this makefile without Arduino, copy the resources from these
 # locations and edit the pathnames.  The rest of Arduino is not needed.
 #************************************************************************
-
 
 ifeq ($(QPCPP),)
 QPCPP := ../qpcpp
@@ -37,19 +36,12 @@ QP_PORT_DIR := $(QPCPP)/ports/arm-cm/qv/gnu
 
 # list of all source directories used by this project
 VPATH = \
-	$(COMMON_DIR) \
-	$(COMMON_DIR)/Libraries \
-	$(COMMON_DIR)/SPI \
-	$(TEENSY_CORE_PATH) \
-	$(TEENSY_CORE_PATH)/util/ \
-	$(TEENSY_CORE_PATH)/avr/ \
 	.. \
 	../.. \
 	$(QPCPP)/src/qf \
 	$(QPCPP)/src/qv \
 	$(QPCPP)/src/qs \
 	$(QP_PORT_DIR) \
-	
 
 # list of all include directories needed by this project
 QP_INCLUDES  = \
@@ -61,14 +53,6 @@ QP_INCLUDES  = \
 #-----------------------------------------------------------------------------
 # files
 #
-
-# C++ source files
-
-COMMON_INCLUDES := $(foreach header, $(filter %/, $(wildcard $(COMMON_DIR)/*/)), -I$(header))
-COMMON_SRCS := $(notdir $(wildcard $(COMMON_DIR)/*/*.cpp))
-
-TC_INCLUDES := $(foreach header, $(filter %/, $(wildcard $(TEENSY_CORE_PATH)/*/)), -I$(header))
-TC_SRCS := $(notdir $(wildcard $(TEENSY_CORE_PATH)/*.cpp))
 
 QP_SRCS := \
 	qep_hsm.cpp \
@@ -93,15 +77,8 @@ QS_SRCS := \
 	qs_rx.cpp \
 	qs_fp.cpp
 
-LIB_DIRS  :=
-LIBS      :=
-
 # defines
 DEFINES   :=
-
-
-# path location for Teensy Loader, teensy_post_compile and teensy_reboot
-TOOLSPATH = $(CURDIR)/tools
 
 # path location for Teensy 3 core
 COREPATH = ../cores_git/teensy3
@@ -182,17 +159,25 @@ C_FILES := $(subst ../,,$(wildcard src/*.c))
 CPP_FILES := $(subst ../,,$(wildcard src/*.cpp)) 
 INO_FILES := $(subst ../,,$(wildcard src/*.c))  
 
+# C++ source files
+DEP_INCLUDES := $(foreach header, $(filter %/, $(wildcard $(COMMON_DIR)/*/)), -I$(header))
+DEP_SRCS := $(subst ../,,$(wildcard $(COMMON_DIR)/*/*.cpp))
+#DEP_SRCS := $(wildcard $(COMMON_DIR)/*/*.cpp)
+
 # Include paths for libraries
 L_INC := $(foreach lib,$(filter %/, $(wildcard $(LIBRARYPATH)/*/)), -I$(lib))
-#L_INC += $(foreach lib,$(filter %/, $(wildcard $(DEP_FILES_PATH)/*/)), -I$(lib)) 
-L_INC += $(QP_INCLUDES) $(COMMON_INCLUDES)
+L_INC += $(QP_INCLUDES) $(DEP_INCLUDES)
 
-# Object construction for local libraries
+# Sources path of local libraries
 SOURCES := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(INO_FILES:.ino=.o) $(TC_FILES:.c=.o) $(TCPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o) #$(DEP_FILES_CPP:.cpp=.o)
-SOURCES += $(QP_SRCS:.cpp=.o) $(COMMON_SRCS:.cpp=.o)   #$(QS_SRCS:.cpp=.o)
-OBJS := $(foreach src,$(SOURCES), $(BUILDDIR)/$(src))
+
+# Source paths of dependencies
+SOURCES += $(QP_SRCS:.cpp=.o) $(DEP_SRCS:.cpp=.o)
+
 
 # Object construction for dependencies
+OBJS := $(foreach src,$(SOURCES), $(BUILDDIR)/$(src))
+#OBJS += $(foreach src,$(SOURCES), $(BUILDDIR)/Dependencies/$(src))
 
 # Teensyduino Commands
 UPLOADER = teensy_loader_cli

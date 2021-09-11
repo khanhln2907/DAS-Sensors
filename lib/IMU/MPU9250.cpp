@@ -30,7 +30,7 @@ void MPU9250::setup(SPIClass* spix, uint8_t cs){
 MPU_CONFIG_STATUS MPU9250::begin()
 {
 	// Debugging
-	bool isDoubleCheck = false;
+	bool isDoubleCheck = true;
 
 	// Reset power of MPU to stabilize the SPI protocols
 	writeRegister(MPUREG_PWR_MGMT_1, PWR_MGMT_RST);
@@ -56,14 +56,16 @@ MPU_CONFIG_STATUS MPU9250::begin()
 	if(writeRegister(MPUREG_I2C_SLV0_ADDR, AK8963_I2C_ADDR, isDoubleCheck) != MPU_RW_STATUS::WRITE_SUCCESS)
 		return  MPU_SLV0_ADDR_FAIL;		// Set address of slave (AK8963 I2C: 0x0C -> Slave 0) in write mode
 	
-	uint8_t checkIDAK8963;
 	if(writeAK8963Reg(AK8963_CNTL2, AK8963_CNTL2_RST, isDoubleCheck) != MPU_AK8963_STATUS::WRITE_SUCCESS) 
 		return MPU_AK8963_CTRL_FAIL;
 	
 	// Ask ID of AK8963
-	readAK8963Reg(AK8963_WIA, 1, &checkIDAK8963); // Double check is not available
-	if(checkIDAK8963 != AK8963_Device_ID) 
-		return MPU_AK8963_ID_FAIL;
+	// uint8_t checkIDAK8963 = 0;
+	// readAK8963Reg(AK8963_WIA, 1, &checkIDAK8963); // Double check is not available
+	// if(checkIDAK8963 != AK8963_Device_ID) {
+	// 	Serial.printf("0x%x \n", checkIDAK8963);
+	// 	return MPU_AK8963_ID_FAIL;
+	// }
 
 	if(writeAK8963Reg(AK8963_CNTL1, AK8963_CNTL1_MODE1 | AK8963_CNTL1_16BIT, isDoubleCheck) != MPU_AK8963_STATUS::WRITE_SUCCESS) 
 		return MPU_AK8963_FAIL; 
@@ -78,10 +80,8 @@ MPU_CONFIG_STATUS MPU9250::begin()
 	if(configureDLP() == false)
 		return MPU_FAIL;
 
-
-
 	// Ready to go
-	//Log.notice("MPU9250 Startup sucessfully! ");
+	Serial.printf("MPU9250 Startup sucessfully! ");
 	return MPU_OK;
 }
 
@@ -193,7 +193,7 @@ MPU_AK8963_STATUS MPU9250::readAK8963Reg(const uint8_t regAddr, const uint8_t nB
 		return MPU_AK8963_STATUS::READ_FAIL;
 	else{
 		// wait until new data is availble
-		delay(50);
+		delay(100);
 		// Read here
 		if(readRegister(MPUREG_EXT_SENS_DATA_00, nBytes, rxBuf)!= MPU_RW_STATUS::READ_SUCCESS)
 			return MPU_AK8963_STATUS::READ_FAIL;

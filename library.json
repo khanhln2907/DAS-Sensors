@@ -1,0 +1,10 @@
+{
+    "name": "QP",
+    "flags": [
+        "-I../qpcpp/src/",
+        "-I../qpcpp/include",
+        "-I../qpcpp/ports/arm-cm/qv/gnu",
+        "-I../qpcpp/src/qf",
+        "-I../qpcpp/src/qv"
+    ]
+}

@@ -3,24 +3,45 @@
 #include "ArduinoLog.h"
 #include "HardwareSerial.h"
 #include "CircularBuffer.h"
-#include "qpcpp.hpp"
+#include <qpcpp.hpp>
+#include "MPU9250.h"
 
 using namespace QP;
 
 CircularBuffer<int> tmp(20);
 
+MPU9250 imu;
+bool isImuActivated = false;
+
+
 void setup(){
-    pinMode(13, OUTPUT);
+	delay(2000);
+	Log.begin(LOG_LEVEL_NOTICE, &Serial);
+
+	Log.notice("Fnished setup logging \n");
+
+	imu.setup(&SPI1, 10);
+	isImuActivated = (imu.begin() == MPU_CONFIG_STATUS::MPU_OK);
+	if(isImuActivated){
+		Serial.printf("Success \n");
+	}else{
+		Serial.printf("Failed: %d\n");
+	}
+
+	pinMode(13, OUTPUT);
 }
 
 void loop(){
-	QP::QF::init();
-	Log.begin(0, &Serial1);
     digitalWriteFast(13, HIGH);
-    delay(50);
+    delay(500);
     digitalWriteFast(13, LOW);
-    delay(50);
-    Serial.printf("Hello from Sensors \n");
+    delay(500);
+    //Serial.printf("Hello from Sensors \n");
+	if(isImuActivated){
+		imu.sample();
+		imu.printData();
+	}
+
 }
 
 
