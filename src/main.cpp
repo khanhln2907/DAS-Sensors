@@ -5,6 +5,7 @@
 #include "CircularBuffer.h"
 #include <qpcpp.hpp>
 #include "MPU9250.h"
+#include "TaskSampleGPS.h"
 
 using namespace QP;
 
