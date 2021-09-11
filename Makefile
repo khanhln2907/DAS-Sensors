@@ -16,13 +16,89 @@ TEENSY_CORE_SPEED = 180000000
 OPTIONS = -DUSB_SERIAL -DLAYOUT_US_ENGLISH
 
 # directory to build in
-BUILDDIR = $(abspath $(CURDIR)/Build)
+BUILDDIR = $(abspath $(CURDIR)/Build/)
 
 #************************************************************************
 # Location of Teensyduino utilities, Toolchain, and Arduino Libraries.
 # To use this makefile without Arduino, copy the resources from these
 # locations and edit the pathnames.  The rest of Arduino is not needed.
 #************************************************************************
+
+
+ifeq ($(QPCPP),)
+QPCPP := ../qpcpp
+endif
+
+COMMON_DIR := ../Common_git/lib
+TEENSY_CORE_PATH := ../cores_git/teensy3
+
+# QP port used in this project
+QP_PORT_DIR := $(QPCPP)/ports/arm-cm/qv/gnu
+
+# list of all source directories used by this project
+VPATH = \
+	$(COMMON_DIR) \
+	$(COMMON_DIR)/Libraries \
+	$(COMMON_DIR)/SPI \
+	$(TEENSY_CORE_PATH) \
+	$(TEENSY_CORE_PATH)/util/ \
+	$(TEENSY_CORE_PATH)/avr/ \
+	.. \
+	../.. \
+	$(QPCPP)/src/qf \
+	$(QPCPP)/src/qv \
+	$(QPCPP)/src/qs \
+	$(QP_PORT_DIR) \
+	
+
+# list of all include directories needed by this project
+QP_INCLUDES  = \
+	-I../.. \
+	-I$(QPCPP)/include \
+	-I$(QPCPP)/src \
+	-I$(QP_PORT_DIR) \
+
+#-----------------------------------------------------------------------------
+# files
+#
+
+# C++ source files
+
+COMMON_INCLUDES := $(foreach header, $(filter %/, $(wildcard $(COMMON_DIR)/*/)), -I$(header))
+COMMON_SRCS := $(notdir $(wildcard $(COMMON_DIR)/*/*.cpp))
+
+TC_INCLUDES := $(foreach header, $(filter %/, $(wildcard $(TEENSY_CORE_PATH)/*/)), -I$(header))
+TC_SRCS := $(notdir $(wildcard $(TEENSY_CORE_PATH)/*.cpp))
+
+QP_SRCS := \
+	qep_hsm.cpp \
+	qep_msm.cpp \
+	qf_act.cpp \
+	qf_actq.cpp \
+	qf_defer.cpp \
+	qf_dyn.cpp \
+	qf_mem.cpp \
+	qf_ps.cpp \
+	qf_qact.cpp \
+	qf_qeq.cpp \
+	qf_qmact.cpp \
+	qf_time.cpp \
+	qv.cpp \
+	qv_port.cpp
+
+QP_ASMS :=
+
+QS_SRCS := \
+	qs.cpp \
+	qs_rx.cpp \
+	qs_fp.cpp
+
+LIB_DIRS  :=
+LIBS      :=
+
+# defines
+DEFINES   :=
+
 
 # path location for Teensy Loader, teensy_post_compile and teensy_reboot
 TOOLSPATH = $(CURDIR)/tools
@@ -98,25 +174,22 @@ OBJCOPY = $(abspath $(COMPILERPATH))/arm-none-eabi-objcopy
 SIZE = $(abspath $(COMPILERPATH))/arm-none-eabi-size
 
 # automatically create lists of the sources and objects
-LC_FILES := $(wildcard $(LIBRARYPATH)/*/*.c)
-LCPP_FILES := $(wildcard $(LIBRARYPATH)/*/*.cpp)
-TC_FILES := $(wildcard $(COREPATH)/*.c)
-TCPP_FILES := $(wildcard $(COREPATH)/*.cpp)
-C_FILES := $(wildcard src/*.c)
-CPP_FILES := $(wildcard src/*.cpp)
-INO_FILES := $(wildcard src/*.ino)
-
-# Dependencies
-DEP_FILES_DIR_NAME = Common_git
-DEP_FILES_PATH = ../$(DEP_FILES_DIR_NAME)/lib
-DEP_FILES_CPP = $(wildcard $(DEP_FILES_PATH)/*/*.cpp)
+LC_FILES := $(subst ../,,$(wildcard $(LIBRARYPATH)/*/*.c))
+LCPP_FILES := $(subst ../,,$(wildcard $(LIBRARYPATH)/*/*.cpp))
+TC_FILES := $(subst ../,,$(wildcard $(COREPATH)/*.c))
+TCPP_FILES := $(subst ../,,$(wildcard $(COREPATH)/*.cpp))
+C_FILES := $(subst ../,,$(wildcard src/*.c))  
+CPP_FILES := $(subst ../,,$(wildcard src/*.cpp)) 
+INO_FILES := $(subst ../,,$(wildcard src/*.c))  
 
 # Include paths for libraries
 L_INC := $(foreach lib,$(filter %/, $(wildcard $(LIBRARYPATH)/*/)), -I$(lib))
-L_INC += $(foreach lib,$(filter %/, $(wildcard $(DEP_FILES_PATH)/*/)), -I$(lib)) 
+#L_INC += $(foreach lib,$(filter %/, $(wildcard $(DEP_FILES_PATH)/*/)), -I$(lib)) 
+L_INC += $(QP_INCLUDES) $(COMMON_INCLUDES)
 
 # Object construction for local libraries
 SOURCES := $(C_FILES:.c=.o) $(CPP_FILES:.cpp=.o) $(INO_FILES:.ino=.o) $(TC_FILES:.c=.o) $(TCPP_FILES:.cpp=.o) $(LC_FILES:.c=.o) $(LCPP_FILES:.cpp=.o) #$(DEP_FILES_CPP:.cpp=.o)
+SOURCES += $(QP_SRCS:.cpp=.o) $(COMMON_SRCS:.cpp=.o)   #$(QS_SRCS:.cpp=.o)
 OBJS := $(foreach src,$(SOURCES), $(BUILDDIR)/$(src))
 
 # Object construction for dependencies
@@ -131,15 +204,16 @@ TEENSY_FLAGS += -mmcu=$(MCU)
 TEENSY_FLAGS += $(TEENSY_VERBOSE)
 TEENSY_FLAGS += $(TEENSY_WAIT_FOR_DEVICE)
 
+BIN_PATH = $(BUILDDIR)/bin
 
 all: hex
 
 build: 
-	$(TARGET).elf
+	$(BIN_PATH)/$(TARGET).elf
 
-hex: $(BUILDDIR)/$(TARGET).hex
+hex: $(BIN_PATH)/$(TARGET).hex
 
-flash: $(BUILDDIR)/$(TARGET).hex 
+flash: $(BIN_PATH)/$(TARGET).hex 
 	@echo Flashing...
 	$(UPLOADER) $(TEENSY_FLAGS) $<  
 
@@ -158,11 +232,15 @@ $(BUILDDIR)/%.o: %.ino
 	@mkdir -p "$(dir $@)"
 	@$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(L_INC) -o "$@" -x c++ -include Arduino.h -c "$<"
 
-$(BUILDDIR)/$(TARGET).elf: $(OBJS) $(LDSCRIPT)
+$(BIN_PATH)/$(TARGET).elf: $(OBJS) $(LDSCRIPT)
 	@echo -e "[LD]\t$@"
+	@if [ ! -d $(BIN_PATH) ]; then \
+   		mkdir $(BIN_PATH); \
+	fi
+	cd $(BIN_PATH)
 	@$(CC) $(LDFLAGS) -o "$@" $(OBJS) $(LIBS) 	
 
-%.hex: %.elf
+$(BIN_PATH)/$(TARGET).hex: $(BIN_PATH)/$(TARGET).elf
 	@echo -e "[HEX]\t$@"
 	@$(SIZE) "$<"
 	@$(OBJCOPY) -O ihex -R .eeprom "$<" "$@"
@@ -174,6 +252,10 @@ clean:
 	@echo Cleaning...
 	@rm -rf "$(BUILDDIR)"
 	@rm -f "$(TARGET).elf" "$(TARGET).hex"
+	@if [ -d $(BIN_PATH) ]; then \
+   		rm -f $(BIN_PATH); \
+	fi
+	
 
 rebuild:
 	make clean

@@ -3,9 +3,9 @@
 #include "ArduinoLog.h"
 #include "HardwareSerial.h"
 #include "CircularBuffer.h"
+#include "qpcpp.hpp"
 
-//#define USING_MAKEFILE
-//#define __MK66FX1M0__
+using namespace QP;
 
 CircularBuffer<int> tmp(20);
 
@@ -14,10 +14,12 @@ void setup(){
 }
 
 void loop(){
+	QP::QF::init();
+	Log.begin(0, &Serial1);
     digitalWriteFast(13, HIGH);
-    delay(500);
+    delay(50);
     digitalWriteFast(13, LOW);
-    delay(500);
+    delay(50);
     Serial.printf("Hello from Sensors \n");
 }
 
