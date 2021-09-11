@@ -17,11 +17,13 @@
 
 class I_UART_Base {
 public:
-    TaskSampleUARTBase() = delete;
-    TaskSampleUARTBase(uint16_t packetSize);
+    I_UART_Base() = delete;
+    I_UART_Base(uint16_t packetSize);
 
     void begin(HardwareSerial* serial, unsigned long baud);
 
+
+    void loop();
 protected:
     HardwareSerial* _port;
    
@@ -29,13 +31,11 @@ protected:
     
     virtual const uint8_t* const getHeaderBytes(uint8_t* nHeader) = 0;
 
-    CircularBuffer<uint8_t> parserFIFO;
-
     virtual bool parse() = 0;
+
+    CircularBuffer<uint8_t> parserFIFO;
+    uint16_t _packetSize;
 
     
 private:
-    uint16_t _packetSize;
-
-
 };

@@ -14,6 +14,7 @@ CircularBuffer<int> tmp(20);
 MPU9250 imu;
 bool isImuActivated = false;
 
+TaskSampleGPS gps(50);
 
 void setup(){
 	delay(2000);
@@ -29,6 +30,8 @@ void setup(){
 		Serial.printf("Failed: %d\n");
 	}
 
+	//gps.begin(&Serial1, 115200);
+
 	pinMode(13, OUTPUT);
 }
 
@@ -42,7 +45,6 @@ void loop(){
 		imu.sample();
 		imu.printData();
 	}
-
 }
 
 

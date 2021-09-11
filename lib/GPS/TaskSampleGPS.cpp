@@ -1,30 +1,26 @@
 #include "TaskSampleGPS.h"
 #include "HardwareSerial.h"
 #include "ArduinoLog.h"
+#include <vector>
 
-#include<string>
-
-#include<vector>
-using namespace std;
+#include <string>
+//using namespace std;
 
 #include "CommonFunction.h" // Function for conversion ASCII to uint8_t
 
-//static const char* LOG_TAG = "TaskSampleGPS ";
-
-
 #define UTCTIME_MACRO _timeUTC.hour, _timeUTC.minute, _timeUTC.second
 
-inline void Tokenize(const string& str, vector<string>& tokens, const string& delimiters)
+inline void Tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters)
 {
 	// Start at the beginning
-	string::size_type lastPos = 0;
+	std::string::size_type lastPos = 0;
 	// Find position of the first delimiter
-	string::size_type pos = str.find_first_of(delimiters, lastPos);
+	std::string::size_type pos = str.find_first_of(delimiters, lastPos);
 
-	// While we still have string to read
-	while (string::npos != pos && string::npos != lastPos)
+	// While we still have std::string to read
+	while (std::string::npos != pos && std::string::npos != lastPos)
 	{
-		// Found a token, add it to the vector
+		// Found a token, add it to the std::vector
 		tokens.push_back(str.substr(lastPos, pos - lastPos));
 		// Look at the next token instead of skipping delimiters
 		lastPos = pos + 1;
@@ -46,11 +42,12 @@ void replaceAll(std::string& str, const std::string& from, const std::string& to
 	}
 }
 
-TaskSampleGPS::TaskSampleGPS(uint16_t packetSize) : TaskSampleUARTBase(packetSize)
+TaskSampleGPS::TaskSampleGPS(uint16_t packetSize) : I_UART_Base(packetSize)
 {
+	
 }
 
-uint16_t TaskSampleGPS::getTaskRate()
+uint16_t TaskSampleGPS::getSampleRate()
 {
 	return 100;
 }
@@ -72,7 +69,7 @@ bool TaskSampleGPS::parse()
 
 	// Parse iteratively to clear the fifo buffer
 	while (parserFIFO[0] == 0x24 && parserFIFO.size() > _packetSize) {
-		//String mes = String();
+		//std::string mes = std::string();
 		//char* msgPtr = new char[50];
 		//std::vector<char> msgPtr;
 		std::string msgPtr;
@@ -90,7 +87,7 @@ bool TaskSampleGPS::parse()
 			}
 			else if (csFlag && (popByte != 0x24)) { // Dont add the header $ into the CS
 				calCS ^= popByte;
-				//mes += String((char)popByte);
+				//mes += std::string((char)popByte);
 				
 				msgPtr.push_back((char)popByte);
 				//msgPtr[nBytesGet] = (char)popByte;
@@ -112,14 +109,14 @@ bool TaskSampleGPS::parse()
 		if (isValid) {
 			//Log.notice("\n %d: %d bytes GPS Parsed\n", (unsigned long)millis(), nBytesGet);
 			Log.notice("%s \n", msgPtr.c_str());
-			parseNMEA_GPS_Message(msgPtr);
+			//parseNMEA_GPS_Message(msgPtr);
 		}
 		else {
 			Log.warning("Wrong checksum GPS \n");
 			Log.warning("calCS:% X ->% d% d, rxCS : %d %d\n", calCS, (calCS & 0xF0) >> 4, (calCS & 0x0F), rxCS[0], rxCS[1], isValid);
 		}
 
-		// Pass the whole String to the protocol -> generic method
+		// Pass the whole std::string to the protocol -> generic method
 
 		//delete[]msgPtr; // Free the memory
 	}
@@ -129,18 +126,18 @@ bool TaskSampleGPS::parse()
 
 void TaskSampleGPS::parseNMEA_GPS_Message(std::string msg)
 {
-	// Parse the message into token vector
-	vector<string> tokens;
-	string::size_type lastPos = 0;
+	// Parse the message into token std::vector
+	std::vector<std::string> tokens;
+	std::string::size_type lastPos = 0;
 	
 	/*	Start Parsing	*/
 	// Find position of the first delimiter
-	string::size_type pos = msg.find_first_of((std::string)",", lastPos);
+	std::string::size_type pos = msg.find_first_of((std::string)",", lastPos);
 
-	// While we still have string to read
-	while (string::npos != pos && string::npos != lastPos)
+	// While we still have std::string to read
+	while (std::string::npos != pos && std::string::npos != lastPos)
 	{
-		// Found a token, add it to the vector
+		// Found a token, add it to the std::vector
 		tokens.push_back(msg.substr(lastPos, pos - lastPos));
 		// Look at the next token instead of skipping delimiters
 		lastPos = pos + 1;

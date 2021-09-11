@@ -7,8 +7,10 @@
 */
 
 #pragma once
-#include "TaskSampleUARTBase.h"
+#include "I_UART_Base.h"
 #include "BasicType.h"
+
+#include <string>
 
 namespace GPS_t {
     enum class Status_t : char {
@@ -63,22 +65,20 @@ namespace GPS_t {
     };
 }
 
-class TaskSampleGPS : public TaskSampleUARTBase {
+class TaskSampleGPS : public I_UART_Base {
 public:
     TaskSampleGPS() = delete;
 	TaskSampleGPS(uint16_t packetSize);
 
 protected:
-
-    uint16_t getTaskRate();
-
+    virtual void parseNMEA_GPS_Message(std::string msg);
+    
     uint8_t getNHeaderBytes();
     virtual const uint8_t* const getHeaderBytes(uint8_t* nHeader);
-
     virtual bool parse();
-    virtual void parseNMEA_GPS_Message(std::string msg);
 
-
+    virtual uint16_t getSampleRate();
+    
 private:
     const uint8_t _HB[1] = { 0x24 };
 
