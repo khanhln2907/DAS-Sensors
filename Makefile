@@ -223,7 +223,7 @@ $(BIN_PATH)/$(TARGET).elf: $(OBJS) $(LDSCRIPT)
    		mkdir $(BIN_PATH); \
 	fi
 	cd $(BIN_PATH)
-	@$(CC) $(LDFLAGS) -o "$@" $(OBJS) $(LIBS) 	
+	@$(CXX) $(LDFLAGS) -o "$@" $(OBJS) $(LIBS) 	
 
 $(BIN_PATH)/$(TARGET).hex: $(BIN_PATH)/$(TARGET).elf
 	@echo -e "[HEX]\t$@"
