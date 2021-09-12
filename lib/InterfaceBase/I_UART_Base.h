@@ -20,22 +20,19 @@ public:
     I_UART_Base() = delete;
     I_UART_Base(uint16_t packetSize);
 
-    void begin(HardwareSerial* serial, unsigned long baud);
+    void setup(HardwareSerial* serial, unsigned long baud);
 
-
-    void loop();
 protected:
-    HardwareSerial* _port;
-   
-    virtual uint16_t getSampleRate() = 0;
-    
+    void sample();
     virtual const uint8_t* const getHeaderBytes(uint8_t* nHeader) = 0;
-
-    virtual bool parse() = 0;
-
     CircularBuffer<uint8_t> parserFIFO;
     uint16_t _packetSize;
 
-    
+
+    virtual uint32_t getSampleRate() = 0;
+    virtual bool parse() = 0;    
+    virtual void write(uint8_t* txBuf, uint16_t len);
+
 private:
+    HardwareSerial* _port;    
 };

@@ -10,7 +10,11 @@ I_UART_Base::I_UART_Base(uint16_t packetSize) : parserFIFO((size_t) packetSize *
 
 }
 
-void I_UART_Base::begin(HardwareSerial* serial, unsigned long baud)
+void I_UART_Base::write(uint8_t* txBuf, uint16_t len){
+	;
+}
+
+void I_UART_Base::setup(HardwareSerial* serial, unsigned long baud)
 {
 	this->_port = serial;
 	//this->_port->setRxBufferSize(_packetSize);
@@ -18,7 +22,7 @@ void I_UART_Base::begin(HardwareSerial* serial, unsigned long baud)
 
 }
 
-void I_UART_Base::loop()
+void I_UART_Base::sample()
 {
 	bool isValidPacket = false;
 	auto nBytesRx = _port->available();
