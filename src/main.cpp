@@ -1,25 +1,20 @@
-#include <Arduino.h>
-#include "BasicType.h"
-#include "ArduinoLog.h"
-#include "HardwareSerial.h"
-#include "CircularBuffer.h"
-#include <qpcpp.hpp>
-#include "MPU9250.h"
-#include "TaskSampleGPS.h"
-
-using namespace QP;
+#include "main.h"
 
 CircularBuffer<int> tmp(20);
-
 MPU9250 imu;
-bool isImuActivated = false;
-
 TaskSampleGPS gps(50);
 
+bool isImuActivated = false;
 void setup(){
 	delay(2000);
-	Log.begin(LOG_LEVEL_NOTICE, &Serial);
+	// QP init routine
+	QF::init();
+	static QEvt l_smlPoolSto[200];
+	QF::poolInit(l_smlPoolSto, sizeof(l_smlPoolSto), sizeof(l_smlPoolSto[0]));
+	static QSubscrList psPool[200]; 
+	QF::psInit(psPool, Q_DIM(psPool));
 
+	Log.begin(LOG_LEVEL_NOTICE, &Serial);
 	Log.notice("Fnished setup logging \n");
 
 	imu.setup(&SPI1, 10);
@@ -31,20 +26,28 @@ void setup(){
 	}
 
 	//gps.begin(&Serial1, 115200);
-
+	
+	//gps.startAO(1);
 	pinMode(13, OUTPUT);
-}
 
-void loop(){
-    digitalWriteFast(13, HIGH);
+	digitalWriteFast(13, HIGH);
     delay(500);
     digitalWriteFast(13, LOW);
     delay(500);
-    //Serial.printf("Hello from Sensors \n");
-	if(isImuActivated){
-		imu.sample();
-		imu.printData();
-	}
+}
+
+void loop(){
+    // digitalWriteFast(13, HIGH);
+    // delay(500);
+    // digitalWriteFast(13, LOW);
+    // delay(500);
+    // //Serial.printf("Hello from Sensors \n");
+	// if(isImuActivated){
+	// 	imu.sample();
+	// 	imu.printData();
+	// }
+
+	QF::run();
 }
 
 
