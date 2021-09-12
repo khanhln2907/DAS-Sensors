@@ -7,6 +7,7 @@
 */
 
 #pragma once
+#include "SensorBase.h"
 #include "I_UART_Base.h"
 #include "BasicType.h"
 
@@ -65,7 +66,7 @@ namespace GPS_t {
     };
 }
 
-class TaskSampleGPS : public I_UART_Base {
+class TaskSampleGPS : public SensorBase, public I_UART_Base {
 public:
     TaskSampleGPS() = delete;
 	TaskSampleGPS(uint16_t packetSize);
@@ -77,8 +78,9 @@ protected:
     virtual const uint8_t* const getHeaderBytes(uint8_t* nHeader);
     virtual bool parse();
 
-    virtual uint16_t getSampleRate();
+    virtual uint32_t getSampleRate();
     
+    virtual void sample();
 private:
     const uint8_t _HB[1] = { 0x24 };
 

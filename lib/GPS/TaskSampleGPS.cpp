@@ -47,7 +47,11 @@ TaskSampleGPS::TaskSampleGPS(uint16_t packetSize) : I_UART_Base(packetSize)
 	
 }
 
-uint16_t TaskSampleGPS::getSampleRate()
+void TaskSampleGPS::sample(){
+
+}
+
+uint32_t TaskSampleGPS::getSampleRate()
 {
 	return 100;
 }
@@ -109,7 +113,7 @@ bool TaskSampleGPS::parse()
 		if (isValid) {
 			//Log.notice("\n %d: %d bytes GPS Parsed\n", (unsigned long)millis(), nBytesGet);
 			Log.notice("%s \n", msgPtr.c_str());
-			//parseNMEA_GPS_Message(msgPtr);
+			parseNMEA_GPS_Message(msgPtr);
 		}
 		else {
 			Log.warning("Wrong checksum GPS \n");
