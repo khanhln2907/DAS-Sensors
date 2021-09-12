@@ -25,7 +25,7 @@ BUILDDIR = $(abspath $(CURDIR)/build/)
 #************************************************************************
 
 ifeq ($(QPCPP),)
-QPCPP := ../qpcpp
+QPCPP := ../qpcpp_git
 endif
 
 COMMON_DIR := ../Common_git/lib
